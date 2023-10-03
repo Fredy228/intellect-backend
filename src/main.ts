@@ -9,6 +9,7 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(MainModule, {
     logger: ['error', 'warn', 'log'],
+    cors: true,
   });
 
   const PORT = 3333;
