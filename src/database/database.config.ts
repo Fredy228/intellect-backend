@@ -13,7 +13,7 @@ const config: TypeOrmModuleOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: [Users],
-  synchronize: true, // В режиме разработки можно устанавливать в true, но в продакшене лучше false
+  synchronize: process.env.PRODUCTION !== 'true', // В режиме разработки можно устанавливать в true, но в продакшене лучше false
   logging: true,
 };
 
