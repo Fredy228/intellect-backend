@@ -19,6 +19,10 @@ export class UserService {
   async singIn({ email, password }: LoginAuthDto) {
     const user = await this.usersRepository.findOneBy({ email });
 
+    console.log('user', user);
+    console.log('password', password);
+    console.log('email', email);
+
     if (!user || user.password !== password)
       throw new CustomException(
         StatusEnum.UNAUTHORIZED,
