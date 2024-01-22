@@ -4,9 +4,10 @@ import { JwtModule } from '@nestjs/jwt';
 import * as process from 'process';
 
 import databaseConfig from './database/database.config';
-import { ConferenceModule } from './controllers/conference/conference.module';
+import { ConferenceModule } from './conference/conference.module';
 import { WebSocketModule } from './socket/websocket.module';
 import { AuthModule } from './controllers/auth/auth.module';
+import { UserModule } from './controllers/user/user.module';
 
 @Module({
   imports: [
@@ -14,9 +15,10 @@ import { AuthModule } from './controllers/auth/auth.module';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '3d' },
     }),
     AuthModule,
+    UserModule,
     WebSocketModule,
     ConferenceModule,
   ],

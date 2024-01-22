@@ -1,12 +1,26 @@
-import { Module } from '@nestjs/common';
-import { UserService } from './auth.service';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { Users } from './auth.entity';
+import { User, UserDevices } from '../../entity/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProtectRefreshMiddleware } from '../../middlewares/protect-refresh.middleware';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users])],
+  imports: [TypeOrmModule.forFeature([User, UserDevices])],
   controllers: [AuthController],
-  providers: [UserService],
+  providers: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ProtectRefreshMiddleware).forRoutes(
+      {
+        path: '/api/auth/refresh',
+        method: RequestMethod.GET,
+      },
+      {
+        path: '/api/auth/logout',
+        method: RequestMethod.GET,
+      },
+    );
+  }
+}
