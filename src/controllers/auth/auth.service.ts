@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
+import { type Details } from 'express-useragent';
 
 import { User, UserDevices } from '../../entity/user.entity';
 import { LoginAuthDto, RegisterAuthDto } from './auth.dto';
@@ -113,12 +114,18 @@ export class AuthService {
 
     if (!currentUser) {
       const hashPass = await hashPassword(uuidv4());
+      let fixImage = decodedToken.image;
+      const arrayStr = decodedToken.image.split('/');
+      const lastStr = arrayStr[arrayStr.length - 1];
+      if (lastStr && lastStr.includes('=s96-c')) {
+        fixImage = decodedToken.image.replace('=s96-c', '=s256-c');
+      }
       const newUser = this.usersRepository.create({
         email: decodedToken.email,
         password: hashPass,
         firstName: decodedToken.firstName,
         lastName: decodedToken.lastName,
-        image: decodedToken.image,
+        image: fixImage,
       });
 
       await this.usersRepository.save(newUser);
@@ -188,6 +195,29 @@ export class AuthService {
           },
         );
       }),
+    );
+  }
+
+  async userAgent(
+    currDevice: UserDevices,
+    userAgent: Details,
+  ): Promise<string> {
+    return this.entityManager.transaction(
+      async (transactionalEntityManager) => {
+        const device = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
+
+        await transactionalEntityManager
+          .getRepository(UserDevices)
+          .createQueryBuilder()
+          .update(UserDevices)
+          .set({
+            deviceModel: device,
+          })
+          .where('id = :id', { id: currDevice.id })
+          .execute();
+
+        return device;
+      },
     );
   }
 

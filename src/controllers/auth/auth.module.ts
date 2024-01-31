@@ -4,6 +4,7 @@ import { AuthController } from './auth.controller';
 import { User, UserDevices } from '../../entity/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProtectRefreshMiddleware } from '../../middlewares/protect-refresh.middleware';
+import { UserAgentMiddleware } from '../../middlewares/user-agent.middleware';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, UserDevices])],
@@ -21,6 +22,15 @@ export class AuthModule {
         path: '/api/auth/logout',
         method: RequestMethod.GET,
       },
+      {
+        path: '/api/auth/user-agent',
+        method: RequestMethod.PATCH,
+      },
     );
+
+    consumer.apply(UserAgentMiddleware).forRoutes({
+      path: '/api/auth/user-agent',
+      method: RequestMethod.PATCH,
+    });
   }
 }
