@@ -13,7 +13,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(MainModule, {
     logger: ['error', 'warn', 'log'],
     cors: {
-      origin: process.env.CLIENT_URL,
+      origin: [process.env.CLIENT_URL, 'http://localhost:3000'],
       credentials: true,
     },
   });
