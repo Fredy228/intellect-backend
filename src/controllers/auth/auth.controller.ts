@@ -97,7 +97,7 @@ export class AuthController {
       httpOnly: true,
       maxAge: MAX_AGE,
     });
-    res.redirect(`${CLIENT_URL}/welcome?token=${foundUser.accessToken}`);
+    res.redirect(`${CLIENT_URL}/dashboard?token=${foundUser.accessToken}`);
   }
 
   @Get('/refresh')
