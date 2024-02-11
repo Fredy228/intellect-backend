@@ -1,16 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
-import { type Details } from 'express-useragent';
+import { Details } from 'express-useragent';
 
 import { User, UserDevices } from '../../entity/user.entity';
 import { LoginAuthDto, RegisterAuthDto } from './auth.dto';
-import { StatusEnum } from 'src/enums/error/StatusEnum';
 import { TokenType } from '../../types/token-type';
 import { CustomException } from '../../services/custom-exception';
-import { checkPassword, hashPassword } from 'src/services/hashPassword';
+import { checkPassword, hashPassword } from '../../services/hashPassword';
 
 @Injectable()
 export class AuthService {
@@ -27,8 +26,8 @@ export class AuthService {
   async signInCredentials({
     email,
     password,
-    deviceModel,
-  }: LoginAuthDto): Promise<User & TokenType> {
+    userAgent,
+  }: LoginAuthDto & { userAgent: Details }): Promise<User & TokenType> {
     const user = await this.usersRepository.findOne({
       where: { email },
       relations: ['devices'],
@@ -36,16 +35,18 @@ export class AuthService {
 
     if (!user)
       throw new CustomException(
-        StatusEnum.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED,
         `Username or password is wrong`,
       );
     const isValidPass = await checkPassword(password, user.password);
 
     if (!isValidPass)
       throw new CustomException(
-        StatusEnum.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED,
         `Username or password is wrong`,
       );
+
+    const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
 
     await this.deleteOldSession(user.devices);
 
@@ -57,16 +58,17 @@ export class AuthService {
   async signUpCredentials({
     email,
     password,
-    deviceModel,
+    userAgent,
     firstName,
-    lastName,
-  }: RegisterAuthDto): Promise<User & TokenType> {
+  }: RegisterAuthDto & { userAgent: Details }): Promise<User & TokenType> {
     const userFound = await this.usersRepository.findOneBy({ email });
     if (userFound)
       throw new CustomException(
-        StatusEnum.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED,
         `Such a user already exists`,
       );
+
+    const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
 
     const hashPass = await hashPassword(password);
 
@@ -78,7 +80,6 @@ export class AuthService {
       email,
       password: hashPass,
       firstName: name,
-      lastName,
     });
     await this.usersRepository.save(newUser);
 
@@ -88,21 +89,15 @@ export class AuthService {
   }
 
   async authGoogle(
-    token: string,
-    deviceModel: string = null,
+    user: Pick<User, 'firstName' | 'lastName' | 'image' | 'email'>,
+    userAgent: Details,
   ): Promise<User & TokenType> {
-    const decodedToken = await this.jwtService.decode(token);
-
-    const currExp = decodedToken.exp * 1000;
-    const currTime = new Date().getTime();
-
-    if (currExp < currTime)
-      throw new CustomException(StatusEnum.UNAUTHORIZED, `Not verify(auth)`);
-
     const currentUser = await this.usersRepository.findOne({
-      where: { email: decodedToken.email },
+      where: { email: user.email },
       relations: ['devices'],
     });
+
+    const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
 
     if (currentUser) {
       await this.deleteOldSession(currentUser.devices);
@@ -114,18 +109,9 @@ export class AuthService {
 
     if (!currentUser) {
       const hashPass = await hashPassword(uuidv4());
-      let fixImage = decodedToken.image;
-      const arrayStr = decodedToken.image.split('/');
-      const lastStr = arrayStr[arrayStr.length - 1];
-      if (lastStr && lastStr.includes('=s96-c')) {
-        fixImage = decodedToken.image.replace('=s96-c', '=s256-c');
-      }
       const newUser = this.usersRepository.create({
-        email: decodedToken.email,
+        ...user,
         password: hashPass,
-        firstName: decodedToken.firstName,
-        lastName: decodedToken.lastName,
-        image: fixImage,
       });
 
       await this.usersRepository.save(newUser);
@@ -198,33 +184,10 @@ export class AuthService {
     );
   }
 
-  async userAgent(
-    currDevice: UserDevices,
-    userAgent: Details,
-  ): Promise<string> {
-    return this.entityManager.transaction(
-      async (transactionalEntityManager) => {
-        const device = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
-
-        await transactionalEntityManager
-          .getRepository(UserDevices)
-          .createQueryBuilder()
-          .update(UserDevices)
-          .set({
-            deviceModel: device,
-          })
-          .where('id = :id', { id: currDevice.id })
-          .execute();
-
-        return device;
-      },
-    );
-  }
-
   async addDeviceAuth(deviceModel: string, userId: User): Promise<TokenType> {
     const tokens = this.createToken(userId);
     const newDevice = this.devicesRepository.create({
-      deviceModel,
+      deviceModel: deviceModel ? deviceModel : null,
       userId,
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
@@ -236,9 +199,9 @@ export class AuthService {
   }
 
   createToken(user: User): TokenType {
-    const payload = { email: user.firstName, id: user.id };
+    const payload = { email: user.email, id: user.id };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '45m' });
     const refreshToken = this.jwtService.sign(payload);
     return { accessToken, refreshToken };
   }
