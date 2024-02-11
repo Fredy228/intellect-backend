@@ -60,6 +60,7 @@ export class AuthService {
     password,
     userAgent,
     firstName,
+    lastName,
   }: RegisterAuthDto & { userAgent: Details }): Promise<User & TokenType> {
     const userFound = await this.usersRepository.findOneBy({ email });
     if (userFound)
@@ -80,6 +81,7 @@ export class AuthService {
       email,
       password: hashPass,
       firstName: name,
+      lastName,
     });
     await this.usersRepository.save(newUser);
 
