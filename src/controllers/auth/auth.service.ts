@@ -30,7 +30,9 @@ export class AuthService {
   }: LoginAuthDto & { userAgent: Details }): Promise<User & TokenType> {
     const user = await this.usersRepository.findOne({
       where: { email },
-      relations: ['devices'],
+      relations: {
+        devices: true,
+      },
     });
 
     if (!user)
@@ -82,6 +84,7 @@ export class AuthService {
       password: hashPass,
       firstName: name,
       lastName,
+      settings: { restorePassAt: null, code: null },
     });
     await this.usersRepository.save(newUser);
 
@@ -96,7 +99,9 @@ export class AuthService {
   ): Promise<User & TokenType> {
     const currentUser = await this.usersRepository.findOne({
       where: { email: user.email },
-      relations: ['devices'],
+      relations: {
+        devices: true,
+      },
     });
 
     const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
@@ -114,6 +119,7 @@ export class AuthService {
       const newUser = this.usersRepository.create({
         ...user,
         password: hashPass,
+        settings: { restorePassAt: null, code: null },
       });
 
       await this.usersRepository.save(newUser);
@@ -127,38 +133,29 @@ export class AuthService {
   async refreshToken(
     user: User,
     currentDevice: UserDevices,
+    userAgent: Details,
   ): Promise<TokenType> {
-    return this.entityManager.transaction(
-      async (transactionalEntityManager) => {
-        const newTokens = this.createToken(user);
+    const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
 
-        await transactionalEntityManager
-          .getRepository(UserDevices)
-          .createQueryBuilder()
-          .update(UserDevices)
-          .set({
-            accessToken: newTokens.accessToken,
-            refreshToken: newTokens.refreshToken,
-          })
-          .where('id = :id', { id: currentDevice.id })
-          .execute();
+    if (deviceModel !== currentDevice.deviceModel)
+      throw new CustomException(
+        HttpStatus.UNAUTHORIZED,
+        `Login from an untrusted device`,
+      );
 
-        return newTokens;
-      },
-    );
+    const newTokens = this.createToken(user);
+
+    await this.devicesRepository.update(currentDevice, {
+      accessToken: newTokens.accessToken,
+      refreshToken: newTokens.refreshToken,
+    });
+
+    return newTokens;
   }
 
   async logout(currentDevice: UserDevices): Promise<void> {
-    return this.entityManager.transaction(
-      async (transactionalEntityManager) => {
-        await transactionalEntityManager
-          .getRepository(UserDevices)
-          .createQueryBuilder()
-          .delete()
-          .where('id = :id', { id: currentDevice.id })
-          .execute();
-      },
-    );
+    await this.devicesRepository.delete(currentDevice);
+    return;
   }
 
   async deleteOldSession(devices: UserDevices[]) {
@@ -171,26 +168,16 @@ export class AuthService {
 
         if (currExp > currTime) return null;
 
-        return this.entityManager.transaction(
-          async (transactionalEntityManager) => {
-            await transactionalEntityManager
-              .getRepository(UserDevices)
-              .createQueryBuilder()
-              .delete()
-              .from(UserDevices)
-              .where('id = :id', { id: device.id })
-              .execute();
-          },
-        );
+        return await this.devicesRepository.delete(device);
       }),
     );
   }
 
-  async addDeviceAuth(deviceModel: string, userId: User): Promise<TokenType> {
-    const tokens = this.createToken(userId);
+  async addDeviceAuth(deviceModel: string, user: User): Promise<TokenType> {
+    const tokens = this.createToken(user);
     const newDevice = this.devicesRepository.create({
       deviceModel: deviceModel ? deviceModel : null,
-      userId,
+      user,
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
     });

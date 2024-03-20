@@ -6,54 +6,69 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { RoleEnum } from '../enums/user/role-enum';
+import { UserSetting } from '../types/user-type';
+import { Profile } from './proflle.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'user' })
 @Unique(['email'])
 export class User {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty()
   @Column({ type: 'varchar', length: 100, nullable: false })
   email: string;
 
+  @ApiProperty()
   @Column({ type: 'varchar', length: 250, nullable: false })
   password: string;
 
-  @Column({
-    type: 'enum',
-    enum: RoleEnum,
-    nullable: false,
-    default: RoleEnum.STUDENT,
-  })
-  role: RoleEnum;
-
+  @ApiProperty()
   @Column({ type: 'varchar', length: 100, nullable: false })
   firstName: string;
 
+  @ApiProperty()
   @Column({ type: 'varchar', length: 100, nullable: false })
   lastName: string;
 
+  @ApiProperty()
   @Column({ type: 'varchar', length: 100, nullable: true })
   middleName: string;
 
-  @Column({ type: 'tinyint', nullable: true })
-  sex: number;
+  @ApiProperty()
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  phone: string;
 
+  @ApiProperty()
+  @Column({ type: 'smallint', nullable: true })
+  sex: 0 | 1;
+
+  @ApiProperty()
   @Column({ type: 'varchar', length: 100, nullable: true })
   image: string;
 
-  @Column({ type: 'tinyint', default: 0, nullable: false })
-  verified: number;
+  @ApiProperty()
+  @Column({ type: 'boolean', default: false, nullable: false })
+  verified: boolean;
 
-  @Column({
-    type: 'simple-json',
-    default: null,
+  @ApiProperty({
+    type: 'object',
+    example: {
+      restorePassAt: 'Date | null',
+      code: 'string',
+    },
   })
-  settings: {
-    restorePassAt: Date | null;
-  };
+  @Column({
+    type: 'jsonb',
+    // array: false,
+    // default: () => "'{restorePassAt: null, code: null}'",
+    // nullable: false,
+  })
+  settings: UserSetting;
 
+  @ApiProperty()
   @Column({
     name: 'createAt',
     type: 'timestamp',
@@ -61,18 +76,43 @@ export class User {
   })
   createAt: Date;
 
-  @OneToMany(() => UserDevices, (device) => device.userId)
+  @ApiProperty()
+  @Column({
+    name: 'updateAt',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  updateAt: Date;
+
+  @ApiProperty({
+    type: () => [UserDevices],
+  })
+  @OneToMany(() => UserDevices, (device) => device.user, {
+    onDelete: 'NO ACTION',
+  })
   devices: UserDevices[];
+
+  @ApiProperty({
+    type: () => [Profile],
+  })
+  @OneToMany(() => Profile, (profile) => profile.user, {
+    onDelete: 'NO ACTION',
+  })
+  profiles: Profile[];
 }
 
 @Entity({ name: 'user_devices' })
 export class UserDevices {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty()
   @Column({ name: 'deviceModel', type: 'varchar', length: 100, nullable: true })
   deviceModel: string;
 
+  @ApiProperty()
   @Column({
     name: 'createAt',
     type: 'timestamp',
@@ -80,12 +120,23 @@ export class UserDevices {
   })
   createAt: Date;
 
+  @ApiProperty()
+  @Column({
+    name: 'updateAt',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  updateAt: Date;
+
+  @ApiProperty()
   @Column({ type: 'varchar', length: 250, nullable: false })
   accessToken: string;
 
+  @ApiProperty()
   @Column({ type: 'varchar', length: 250, nullable: false })
   refreshToken: string;
 
   @ManyToOne(() => User, (user) => user.devices, { onDelete: 'CASCADE' })
-  userId: User;
+  user: User;
 }

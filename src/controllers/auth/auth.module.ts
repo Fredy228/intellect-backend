@@ -48,6 +48,10 @@ export class AuthModule {
         path: '/api/auth/login',
         method: RequestMethod.POST,
       },
+      {
+        path: '/api/auth/refresh',
+        method: RequestMethod.POST,
+      },
     );
   }
 }

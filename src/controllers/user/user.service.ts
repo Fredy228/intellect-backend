@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User, UserDevices } from '../../entity/user.entity';
 import { EntityManager, Repository } from 'typeorm';
+import { UserDto } from './user.dto';
 
 @Injectable()
 export class UserService {
@@ -17,5 +18,18 @@ export class UserService {
     user.password = undefined;
 
     return user;
+  }
+
+  async updateUserPersonalInfo(
+    user: User,
+    body: Partial<UserDto>,
+  ): Promise<void> {
+    const keysBody = Object.keys(body);
+
+    if (keysBody.length === 0) return;
+
+    await this.usersRepository.update(user, body);
+
+    return;
   }
 }

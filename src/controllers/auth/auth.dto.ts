@@ -1,12 +1,31 @@
-export abstract class BaseAuthDto {
+import { ApiProperty } from '@nestjs/swagger';
+
+export class LoginAuthDto {
+  @ApiProperty({ required: true })
   email: string;
+
+  @ApiProperty()
   password: string;
-  deviceModel?: string;
 }
 
-export class LoginAuthDto extends BaseAuthDto {}
+export class RegisterAuthDto {
+  @ApiProperty({ required: true })
+  email: string;
 
-export class RegisterAuthDto extends BaseAuthDto {
+  @ApiProperty()
   firstName: string;
-  lastName: string;
+
+  @ApiProperty()
+  lastName?: string;
+
+  @ApiProperty()
+  password: string;
+}
+
+export class TokenDto {
+  @ApiProperty()
+  accessToken: string;
+
+  @ApiProperty()
+  refreshToken: string;
 }

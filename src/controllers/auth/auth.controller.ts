@@ -13,10 +13,11 @@ import { Request, Response } from 'express';
 import * as dotenv from 'dotenv';
 import AuthGoogle from './google.guard';
 import * as process from 'process';
+import { ApiOperation, ApiResponse, ApiTags, OmitType } from '@nestjs/swagger';
 
 dotenv.config();
 
-import { LoginAuthDto, RegisterAuthDto } from './auth.dto';
+import { LoginAuthDto, RegisterAuthDto, TokenDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
@@ -27,10 +28,18 @@ const CLIENT_URL = process.env.CLIENT_URL;
 const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 
 @Controller('api/auth')
+@ApiTags('Authorization')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/register')
+  @ApiOperation({ summary: 'Register user', description: 'Return user' })
+  @ApiResponse({
+    status: 201,
+    description: 'User created',
+    type: OmitType(User, ['password', 'devices']),
+  })
+  @ApiResponse({ status: 401, description: 'Such a user already exists' })
   @HttpCode(201)
   @UsePipes(new BodyValidationPipe(userCreateSchema))
   async register(
@@ -38,7 +47,7 @@ export class AuthController {
     req: Request,
     @Body() registerBody: RegisterAuthDto,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<User> {
     const userAgent = req['useragent'];
     const createdUser = await this.authService.signUpCredentials({
       ...registerBody,
@@ -52,6 +61,13 @@ export class AuthController {
   }
 
   @Post('/login')
+  @ApiOperation({ summary: 'Login user', description: 'Return user' })
+  @ApiResponse({
+    status: 200,
+    description: 'User authorized',
+    type: OmitType(User, ['password', 'devices']),
+  })
+  @ApiResponse({ status: 401, description: 'Username or password is wrong' })
   @HttpCode(200)
   async login(
     @Req()
@@ -64,7 +80,6 @@ export class AuthController {
       ...loginBody,
       userAgent,
     });
-    console.log('toooken', foundUser.refreshToken);
     res.cookie('refreshToken', foundUser.refreshToken, {
       httpOnly: true,
       maxAge: MAX_AGE,
@@ -73,6 +88,10 @@ export class AuthController {
   }
 
   @Get('google')
+  @ApiOperation({
+    summary: 'Login user with Google',
+    description: 'Start user authorization',
+  })
   @HttpCode(200)
   @UseGuards(AuthGoogle)
   googleLogin() {
@@ -80,7 +99,15 @@ export class AuthController {
   }
 
   @Get('google/callback')
-  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Login user with Google',
+    description: 'Continue user authorized and Redirect',
+  })
+  @ApiResponse({
+    status: 302,
+    description: 'Redirect',
+  })
+  @HttpCode(302)
   @UseGuards(AuthGoogle)
   async googleLoginCallback(
     @Req()
@@ -90,7 +117,6 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const userAgent = req['useragent'];
-    console.log('user', req.user);
     const foundUser = await this.authService.authGoogle(req.user, userAgent);
 
     res.cookie('refreshToken', foundUser.refreshToken, {
@@ -101,6 +127,13 @@ export class AuthController {
   }
 
   @Get('/refresh')
+  @ApiOperation({ summary: 'Refresh tokens', description: 'Return tokens' })
+  @ApiResponse({
+    status: 200,
+    description: 'User refreshed token',
+    type: TokenDto,
+  })
+  @ApiResponse({ status: 401, description: 'Invalid token or not found' })
   @HttpCode(200)
   async refreshToken(
     @Req()
@@ -110,9 +143,12 @@ export class AuthController {
     },
     @Res({ passthrough: true }) res: Response,
   ) {
+    const userAgent = req['useragent'];
+
     const tokens = await this.authService.refreshToken(
       req.user,
       req.currentDevice,
+      userAgent,
     );
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
@@ -122,6 +158,9 @@ export class AuthController {
   }
 
   @Get('/logout')
+  @ApiOperation({ summary: 'Logout user', description: 'Return null' })
+  @ApiResponse({ status: 204, description: 'User logout' })
+  @ApiResponse({ status: 401, description: 'Invalid token or not found' })
   @HttpCode(204)
   async logOut(
     @Req() req: Request & { user: User; currentDevice: UserDevices },
