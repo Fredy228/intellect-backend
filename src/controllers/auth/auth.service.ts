@@ -32,6 +32,14 @@ export class AuthService {
       where: { email },
       relations: {
         devices: true,
+        profiles: true,
+      },
+      select: {
+        profiles: {
+          id: true,
+          title: true,
+          role: true,
+        },
       },
     });
 
