@@ -1,13 +1,12 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import * as process from 'process';
-import { User, UserDevices } from '../entity/user.entity';
-import { Profile } from '../entity/proflle.entity';
+import { User, UserDevices } from '../entity/user/user.entity';
+import { Profile } from '../entity/user/proflle.entity';
 
 dotenv.config();
 
 const config: TypeOrmModuleOptions = {
-  // type: 'mysql',
   type: 'postgres',
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),

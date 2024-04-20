@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CustomException } from '../services/custom-exception';
-import { User, UserDevices } from '../entity/user.entity';
+import { User, UserDevices } from '../entity/user/user.entity';
 
 @Injectable()
 export class ProtectRefreshMiddleware implements NestMiddleware {

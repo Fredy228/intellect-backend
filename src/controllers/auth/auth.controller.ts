@@ -22,7 +22,7 @@ import { AuthService } from './auth.service';
 
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import { userCreateSchema } from '../../joi-schema/userSchema';
-import { User, UserDevices } from '../../entity/user.entity';
+import { User, UserDevices } from '../../entity/user/user.entity';
 
 const CLIENT_URL = process.env.CLIENT_URL;
 const MAX_AGE = 7 * 24 * 60 * 60 * 1000;

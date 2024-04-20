@@ -6,9 +6,10 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { UserSetting } from '../types/user-type';
+import { UserAction, UserSetting } from '../../types/user-type';
 import { Profile } from './proflle.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { CountryCode } from 'libphonenumber-js/types';
 
 @Entity({ name: 'user' })
 @Unique(['email'])
@@ -38,8 +39,19 @@ export class User {
   middleName: string;
 
   @ApiProperty()
-  @Column({ type: 'varchar', length: 20, nullable: true })
-  phone: string;
+  @Column({ type: 'jsonb', nullable: true, default: null })
+  phone: {
+    country: CountryCode;
+    number: string;
+  } | null;
+
+  @ApiProperty()
+  @Column({ type: 'date', nullable: true })
+  birthday: Date;
+
+  @ApiProperty()
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  bio: string;
 
   @ApiProperty()
   @Column({ type: 'smallint', nullable: true })
@@ -56,17 +68,26 @@ export class User {
   @ApiProperty({
     type: 'object',
     example: {
-      restorePassAt: 'Date | null',
-      code: 'string',
+      profileDefault: 'number | null',
     },
   })
   @Column({
     type: 'jsonb',
-    // array: false,
-    // default: () => "'{restorePassAt: null, code: null}'",
-    // nullable: false,
   })
   settings: UserSetting;
+
+  @ApiProperty({
+    type: 'object',
+    example: {
+      timeAt: 'Date | null',
+      code: 'null',
+      numberTries: 'number',
+    },
+  })
+  @Column({
+    type: 'jsonb',
+  })
+  actions: UserAction;
 
   @ApiProperty()
   @Column({

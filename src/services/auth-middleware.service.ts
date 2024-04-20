@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entity/user.entity';
+import { User } from '../entity/user/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { CustomException } from './custom-exception';
@@ -25,9 +25,22 @@ export class AuthMiddlewareService {
       throw new CustomException(HttpStatus.UNAUTHORIZED, 'Not authorized');
     }
 
-    const currentUser = await this.usersRepository.findOneBy({
-      id: decodedToken.id,
+    const currentUser = await this.usersRepository.findOne({
+      where: {
+        id: decodedToken.id,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        image: true,
+        email: true,
+        verified: true,
+        settings: {},
+      },
     });
+
+    console.log('user---', currentUser);
 
     if (!currentUser)
       throw new CustomException(HttpStatus.UNAUTHORIZED, 'Not authorized');

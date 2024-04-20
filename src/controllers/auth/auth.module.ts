@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 
 import { AuthController } from './auth.controller';
-import { User, UserDevices } from '../../entity/user.entity';
+import { User, UserDevices } from '../../entity/user/user.entity';
 import { AuthService } from './auth.service';
 import { ProtectRefreshMiddleware } from '../../middlewares/protect-refresh.middleware';
 import { UserAgentMiddleware } from '../../middlewares/user-agent.middleware';
@@ -50,7 +50,7 @@ export class AuthModule {
       },
       {
         path: '/api/auth/refresh',
-        method: RequestMethod.POST,
+        method: RequestMethod.GET,
       },
     );
   }

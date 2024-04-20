@@ -6,7 +6,7 @@ import {
   TableInheritance,
 } from 'typeorm';
 import { User } from './user.entity';
-import { RoleEnum } from '../enums/user/role-enum';
+import { RoleEnum } from '../../enums/user/role-enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'profile' })
@@ -15,6 +15,10 @@ export class Profile {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
+
+  @ApiProperty()
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  title: string;
 
   @ApiProperty({
     type: 'enum',

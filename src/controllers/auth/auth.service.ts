@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import { Details } from 'express-useragent';
 
-import { User, UserDevices } from '../../entity/user.entity';
+import { User, UserDevices } from '../../entity/user/user.entity';
 import { LoginAuthDto, RegisterAuthDto } from './auth.dto';
 import { TokenType } from '../../types/token-type';
 import { CustomException } from '../../services/custom-exception';
@@ -84,7 +84,8 @@ export class AuthService {
       password: hashPass,
       firstName: name,
       lastName,
-      settings: { restorePassAt: null, code: null },
+      actions: { timeAt: null, code: null, numberTries: 0 },
+      settings: { profileDefault: null },
     });
     await this.usersRepository.save(newUser);
 
@@ -119,7 +120,8 @@ export class AuthService {
       const newUser = this.usersRepository.create({
         ...user,
         password: hashPass,
-        settings: { restorePassAt: null, code: null },
+        actions: { timeAt: null, code: null, numberTries: 0 },
+        settings: { profileDefault: null },
       });
 
       await this.usersRepository.save(newUser);
@@ -137,6 +139,9 @@ export class AuthService {
   ): Promise<TokenType> {
     const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
 
+    console.log(deviceModel);
+    console.log(currentDevice.deviceModel);
+
     if (deviceModel !== currentDevice.deviceModel)
       throw new CustomException(
         HttpStatus.UNAUTHORIZED,
@@ -144,6 +149,8 @@ export class AuthService {
       );
 
     const newTokens = this.createToken(user);
+
+    console.log(newTokens);
 
     await this.devicesRepository.update(currentDevice, {
       accessToken: newTokens.accessToken,
@@ -190,7 +197,7 @@ export class AuthService {
   createToken(user: User): TokenType {
     const payload = { email: user.email, id: user.id };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '45m' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
     const refreshToken = this.jwtService.sign(payload);
     return { accessToken, refreshToken };
   }
