@@ -143,18 +143,18 @@ export class AuthService {
   async refreshToken(
     user: User,
     currentDevice: UserDevices,
-    userAgent: Details,
+    // userAgent: Details,
   ): Promise<TokenType> {
-    const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
-
-    console.log(deviceModel);
-    console.log(currentDevice.deviceModel);
-
-    if (deviceModel !== currentDevice.deviceModel)
-      throw new CustomException(
-        HttpStatus.UNAUTHORIZED,
-        `Login from an untrusted device`,
-      );
+    // const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
+    //
+    // console.log(deviceModel);
+    // console.log(currentDevice.deviceModel);
+    //
+    // if (deviceModel !== currentDevice.deviceModel)
+    //   throw new CustomException(
+    //     HttpStatus.UNAUTHORIZED,
+    //     `Login from an untrusted device`,
+    //   );
 
     const newTokens = this.createToken(user);
 
