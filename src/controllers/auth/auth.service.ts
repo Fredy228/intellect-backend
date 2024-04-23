@@ -143,27 +143,26 @@ export class AuthService {
   async refreshToken(
     user: User,
     currentDevice: UserDevices,
-    // userAgent: Details,
+    userAgent: Details,
   ): Promise<TokenType> {
-    // const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
-    //
-    // console.log(deviceModel);
-    // console.log(currentDevice.deviceModel);
-    //
-    // if (deviceModel !== currentDevice.deviceModel)
-    //   throw new CustomException(
-    //     HttpStatus.UNAUTHORIZED,
-    //     `Login from an untrusted device`,
-    //   );
+    const deviceModel = `${userAgent?.platform} ${userAgent?.os} ${userAgent?.browser}`;
+
+    if (deviceModel !== currentDevice.deviceModel)
+      throw new CustomException(
+        HttpStatus.UNAUTHORIZED,
+        `Login from an untrusted device`,
+      );
 
     const newTokens = this.createToken(user);
 
     console.log(newTokens);
 
-    await this.devicesRepository.update(currentDevice, {
+    const res = await this.devicesRepository.update(currentDevice.id, {
       accessToken: newTokens.accessToken,
       refreshToken: newTokens.refreshToken,
     });
+
+    console.log('updare-res', res);
 
     return newTokens;
   }
@@ -205,7 +204,7 @@ export class AuthService {
   createToken(user: User): TokenType {
     const payload = { email: user.email, id: user.id };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '10m' });
     const refreshToken = this.jwtService.sign(payload);
     return { accessToken, refreshToken };
   }

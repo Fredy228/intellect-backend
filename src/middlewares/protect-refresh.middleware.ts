@@ -37,7 +37,13 @@ export class ProtectRefreshMiddleware implements NestMiddleware {
 
     const currentUser = await this.usersRepository.findOne({
       where: { id: decodedToken.id },
-      relations: ['devices'],
+      relations: {
+        devices: true,
+      },
+      select: {
+        id: true,
+        email: true,
+      },
     });
     if (!currentUser)
       throw new CustomException(HttpStatus.UNAUTHORIZED, 'Not authorized');
