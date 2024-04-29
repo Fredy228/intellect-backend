@@ -4,6 +4,9 @@ import { EntityManager, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import { Details } from 'express-useragent';
+import * as dotenv from 'dotenv';
+import * as process from 'process';
+dotenv.config();
 
 import { User, UserDevices } from '../../entity/user/user.entity';
 import { LoginAuthDto, RegisterAuthDto } from './auth.dto';
@@ -204,7 +207,9 @@ export class AuthService {
   createToken(user: User): TokenType {
     const payload = { email: user.email, id: user.id };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '10m' });
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: process.env.JWT_EXPIRE_ACCESS_TOKEN,
+    });
     const refreshToken = this.jwtService.sign(payload);
     return { accessToken, refreshToken };
   }

@@ -52,20 +52,28 @@ export const userUpdateSchema = Joi.object()
       'string.max':
         'middleName|The middle name cannot be more than 30 characters',
     }),
-    bio: Joi.string().min(1).max(100).allow(null).messages({
+    bio: Joi.string().min(2).max(30).allow(null).messages({
       'string.empty': 'bio|The about me is empty.',
       'string.min': 'bio|The about me cannot be less than 2 characters',
       'string.max': 'bio|The about me cannot be more than 30 characters',
     }),
-    sex: Joi.number().min(0).max(1).allow(null).messages({
-      'number.empty': 'sex|The sex is empty.',
-      'number.min': 'sex|The sex cannot be less than 0 characters',
-      'number.max': 'sex|The sex cannot be more than 1 characters',
-    }),
+    sex: Joi.number().valid(0, 1).allow(null),
     birthday: Joi.date().allow(null),
     phone: Joi.object({
-      country: Joi.string().min(1).max(3),
-      number: Joi.string().min(2).max(30),
-    }),
+      country: Joi.string().min(1).max(3).messages({
+        'string.empty': 'countryCode|The country code is empty.',
+        'string.min':
+          'countryCode|The country code cannot be less than 1 characters',
+        'string.max':
+          'countryCode|The country code cannot be more than 3 characters',
+      }),
+      number: Joi.string().min(2).max(30).messages({
+        'number.empty': 'numberPhone|The number phone is empty.',
+        'number.min':
+          'numberPhone|The number phone cannot be less than 2 characters',
+        'number.max':
+          'numberPhone|The number phone cannot be more than 30 characters',
+      }),
+    }).allow(null),
   })
   .options({ stripUnknown: false });

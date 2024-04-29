@@ -11,12 +11,12 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import * as dotenv from 'dotenv';
-import AuthGoogle from './google.guard';
 import * as process from 'process';
 import { ApiOperation, ApiResponse, ApiTags, OmitType } from '@nestjs/swagger';
 
 dotenv.config();
 
+import AuthGoogle from './google.guard';
 import { LoginAuthDto, RegisterAuthDto, TokenDto } from './auth.dto';
 import { AuthService } from './auth.service';
 

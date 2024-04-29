@@ -104,17 +104,22 @@ export class UserService {
       } catch (e) {
         throw new CustomException(
           HttpStatus.BAD_REQUEST,
-          `Error parse is invalid`,
+          `numberPhone|The number phone is invalid`,
         );
       }
 
       if (!phoneNumber?.isValid())
-        throw new CustomException(HttpStatus.BAD_REQUEST, `Phone is invalid`);
+        throw new CustomException(
+          HttpStatus.BAD_REQUEST,
+          `numberPhone|The number phone is invalid`,
+        );
 
       phone = {
         country: body.phone.country,
         number: body.phone.number,
       };
+    } else if (body.phone === null) {
+      phone = null;
     }
 
     await this.usersRepository.update(user.id, {
