@@ -4,7 +4,6 @@ import {
   Get,
   HttpCode,
   Patch,
-  Query,
   Req,
   UsePipes,
 } from '@nestjs/common';
@@ -12,16 +11,19 @@ import { UserService } from './user.service';
 import { Request } from 'express';
 import { User } from '../../entity/user/user.entity';
 import {
+  ApiBearerAuth,
+  ApiNoContentResponse,
+  ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
-  OmitType,
-  PartialType,
+  ApiUnauthorizedResponse,
   PickType,
 } from '@nestjs/swagger';
-import { UserDto } from './user.dto';
+import { UserUpdateDto } from './user.dto';
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import { userUpdateSchema } from '../../joi-schema/userSchema';
+import { Profile } from '../../entity/user/proflle.entity';
+import { UserAndProfileResponse } from './swagger-response';
 
 @Controller('api/user')
 @ApiTags('User')
@@ -30,20 +32,28 @@ export class UserController {
 
   @Get('/')
   @ApiOperation({ summary: 'Get user', description: 'Return user' })
-  @ApiResponse({
+  @ApiBearerAuth()
+  @ApiOkResponse({
     status: 200,
-    description: 'User got',
-    type: OmitType(User, ['password', 'devices']),
+    description: 'User and Profiles got',
+    type: UserAndProfileResponse,
   })
-  @ApiResponse({ status: 401, description: 'Invalid token or not found' })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    description: 'Invalid token or not found',
+  })
   @HttpCode(200)
-  async getMe(@Req() req: Request & { user: User }) {
+  async getMe(@Req() req: Request & { user: User }): Promise<{
+    user: User;
+    profiles: Profile[];
+  }> {
     return this.userService.getUser(req.user);
   }
 
   @Get('/profile')
   @ApiOperation({ summary: 'Get user', description: 'Return user' })
-  @ApiResponse({
+  @ApiBearerAuth()
+  @ApiOkResponse({
     status: 200,
     description: 'User profile',
     type: PickType(User, [
@@ -58,7 +68,10 @@ export class UserController {
       'bio',
     ]),
   })
-  @ApiResponse({ status: 401, description: 'Invalid token or not found' })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    description: 'Invalid token or not found',
+  })
   @HttpCode(200)
   async getMyUserProfile(@Req() req: Request & { user: User }) {
     return this.userService.getMyUserProfile(req.user);
@@ -69,16 +82,16 @@ export class UserController {
     summary: 'Update user personal info',
     description: 'Return null',
   })
-  @ApiResponse({
+  @ApiBearerAuth()
+  @ApiNoContentResponse({
     status: 204,
     description: 'Updated user',
-    type: PartialType(UserDto),
   })
   @HttpCode(204)
   @UsePipes(new BodyValidationPipe(userUpdateSchema))
   async updateMePersonalInfo(
     @Req() req: Request & { user: User },
-    @Body() body: Partial<UserDto>,
+    @Body() body: UserUpdateDto,
   ): Promise<void> {
     return this.userService.updateUserPersonalInfo(req.user, body);
   }

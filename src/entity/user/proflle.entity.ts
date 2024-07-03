@@ -22,7 +22,7 @@ export class Profile {
 
   @ApiProperty({
     type: 'enum',
-    example: 'student | teacher | owner_university | moder_university',
+    example: Object.values(RoleEnum).join(' | '),
   })
   @Column({
     type: 'enum',
@@ -48,6 +48,9 @@ export class Profile {
   })
   updateAt: Date;
 
-  @ManyToOne(() => User, (user) => user.profiles, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.profiles, {
+    onDelete: 'CASCADE',
+    cascade: true,
+  })
   user: User;
 }

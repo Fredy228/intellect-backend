@@ -1,15 +1,18 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
+  UpdateDateColumn,
 } from 'typeorm';
 import { UserAction, UserSetting } from '../../types/user-type';
 import { Profile } from './proflle.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { CountryCode } from 'libphonenumber-js/types';
+import { PhoneNumberDto } from '../../controllers/user/user.dto';
 
 @Entity({ name: 'user' })
 @Unique(['email'])
@@ -38,7 +41,9 @@ export class User {
   @Column({ type: 'varchar', length: 100, nullable: true })
   middleName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: PhoneNumberDto,
+  })
   @Column({ type: 'jsonb', nullable: true, default: null })
   phone: {
     country: CountryCode;
@@ -90,7 +95,7 @@ export class User {
   actions: UserAction;
 
   @ApiProperty()
-  @Column({
+  @CreateDateColumn({
     name: 'createAt',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
@@ -98,7 +103,7 @@ export class User {
   createAt: Date;
 
   @ApiProperty()
-  @Column({
+  @UpdateDateColumn({
     name: 'updateAt',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
@@ -109,17 +114,13 @@ export class User {
   @ApiProperty({
     type: () => [UserDevices],
   })
-  @OneToMany(() => UserDevices, (device) => device.user, {
-    onDelete: 'NO ACTION',
-  })
+  @OneToMany(() => UserDevices, (device) => device.user)
   devices: UserDevices[];
 
   @ApiProperty({
     type: () => [Profile],
   })
-  @OneToMany(() => Profile, (profile) => profile.user, {
-    onDelete: 'NO ACTION',
-  })
+  @OneToMany(() => Profile, (profile) => profile.user)
   profiles: Profile[];
 }
 
@@ -134,7 +135,7 @@ export class UserDevices {
   deviceModel: string;
 
   @ApiProperty()
-  @Column({
+  @CreateDateColumn({
     name: 'createAt',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
@@ -142,7 +143,7 @@ export class UserDevices {
   createAt: Date;
 
   @ApiProperty()
-  @Column({
+  @UpdateDateColumn({
     name: 'updateAt',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
@@ -158,6 +159,9 @@ export class UserDevices {
   @Column({ type: 'varchar', length: 250, nullable: false })
   refreshToken: string;
 
-  @ManyToOne(() => User, (user) => user.devices, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.devices, {
+    onDelete: 'CASCADE',
+    cascade: true,
+  })
   user: User;
 }

@@ -1,0 +1,39 @@
+# api/group/:idUniversity
+POST {{url}}api/group/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "MC-181",
+  "level": 1
+}
+
+###
+# api/group/:idGroup
+PATCH {{url}}api/group/3
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "level": 2,
+  "start_date": "2024-07-01T11:38:06.468Z",
+  "end_date": "2024-09-01T11:38:06.468Z"
+}
+
+###
+# GET all api/group/:idUniversity
+GET {{url}}api/group/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+###
+# GET by id api/group/:idGroup
+GET {{url}}api/group/id/3
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+###
+# api/group/:idGroup
+DELETE {{url}}api/group/2
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}

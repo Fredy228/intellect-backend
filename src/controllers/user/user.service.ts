@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User, UserDevices } from '../../entity/user/user.entity';
 import { EntityManager, Repository } from 'typeorm';
-import { UserDto } from './user.dto';
+import { UserUpdateDto } from './user.dto';
 import { parsePhoneNumber } from 'libphonenumber-js';
 import { CustomException } from '../../services/custom-exception';
 import { Profile } from '../../entity/user/proflle.entity';
@@ -87,12 +87,7 @@ export class UserService {
     return { user, profiles };
   }
 
-  async updateUserPersonalInfo(
-    user: User,
-    body: Partial<UserDto>,
-  ): Promise<void> {
-    console.log('body', body);
-
+  async updateUserPersonalInfo(user: User, body: UserUpdateDto): Promise<void> {
     const keysBody = Object.keys(body);
     if (keysBody.length === 0) return;
 
@@ -150,8 +145,6 @@ export class UserService {
 
     if (!foundProfile)
       throw new CustomException(HttpStatus.NOT_FOUND, 'User not found');
-
-    console.log(foundProfile);
 
     return foundProfile;
   }

@@ -1,0 +1,21 @@
+POST {{url}}api/university
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "university_name": "Національний університет 'Одеська політехніка'",
+  "university_short_name": "НУОП"
+}
+
+###
+PATCH {{url}}api/university/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+"registration_year": 1999
+}
+
+###
+
+

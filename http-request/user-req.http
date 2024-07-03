@@ -1,0 +1,52 @@
+GET {{url}}api/user
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+###
+PATCH {{url}}api/user
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+"sex": 0
+}
+
+###
+# Login
+POST {{url}}api/auth/login
+Content-Type: application/json
+
+{
+  "email": "alexei@gmail.com",
+  "password": "Qawsed123"
+}
+
+> {%
+  console.log(response.body);
+  client.global.set("accessToken", response.body.accessToken);
+  client.global.set("refreshToken", response.body.refreshToken);
+%}
+
+###
+# Refresh
+GET {{url}}api/auth/refresh
+Content-Type: application/json
+Access-Control-Allow-Credentials: true
+#Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhlaUBnbWFpbC5jb20iLCJpZCI6MSwiaWF0IjoxNzE5ODYxNDU0LCJleHAiOjE3MjA0NjYyNTR9.syZ7KyaPVQc6C5IAlg1_zGeo-AZcQpEMI1AKZONzMPo
+
+> {%
+  client.global.set("accessToken", response.body.accessToken);
+  client.global.set("refreshToken", response.body.refreshToken);
+%}
+
+###
+# Register
+POST {{url}}api/auth/register
+Content-Type: application/json
+
+{
+  "email": "alexei@gmail.com",
+  "password": "Qawsed123",
+  "firstName": "Alexei",
+  "lastName": "Smahrovich"
+}

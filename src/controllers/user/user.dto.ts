@@ -1,28 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CountryCode } from 'libphonenumber-js/types';
 
-export class UserDto {
+export class PhoneNumberDto {
   @ApiProperty()
-  firstName: string;
+  country: CountryCode;
 
   @ApiProperty()
-  lastName: string;
+  number: string;
+}
+
+export class UserUpdateDto {
+  @ApiProperty()
+  firstName?: string;
 
   @ApiProperty()
-  middleName: string;
+  lastName?: string;
 
   @ApiProperty()
-  phone: {
-    country: CountryCode;
-    number: string;
-  };
+  middleName?: string;
 
   @ApiProperty()
-  birthday: Date;
+  phone?: PhoneNumberDto;
 
   @ApiProperty()
-  bio: string;
+  birthday?: Date;
 
   @ApiProperty()
-  sex: 0 | 1;
+  bio?: string;
+
+  @ApiProperty()
+  sex?: 0 | 1;
 }

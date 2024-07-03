@@ -16,7 +16,7 @@ export class RegisterAuthDto {
   firstName: string;
 
   @ApiProperty()
-  lastName?: string;
+  lastName: string;
 
   @ApiProperty()
   password: string;

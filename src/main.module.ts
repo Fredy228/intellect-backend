@@ -8,6 +8,9 @@ import { ConferenceModule } from './conference/conference.module';
 import { WebSocketModule } from './socket/websocket.module';
 import { AuthModule } from './controllers/auth/auth.module';
 import { UserModule } from './controllers/user/user.module';
+import { GroupModule } from './controllers/group/group.module';
+import { UniversityModule } from './controllers/university/university.module';
+import { StudentModule } from './controllers/student/student.module';
 
 @Module({
   imports: [
@@ -21,6 +24,9 @@ import { UserModule } from './controllers/user/user.module';
     UserModule,
     WebSocketModule,
     ConferenceModule,
+    GroupModule,
+    UniversityModule,
+    StudentModule,
   ],
   providers: [],
 })

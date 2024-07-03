@@ -21,6 +21,7 @@ export class AuthMiddlewareService {
     let decodedToken: { id: any };
     try {
       decodedToken = await this.jwtService.verify(token);
+      console.log('decodedToken', decodedToken);
     } catch (error) {
       throw new CustomException(HttpStatus.UNAUTHORIZED, 'Not authorized');
     }
@@ -28,6 +29,9 @@ export class AuthMiddlewareService {
     const currentUser = await this.usersRepository.findOne({
       where: {
         id: decodedToken.id,
+      },
+      relations: {
+        profiles: true,
       },
       select: {
         id: true,
@@ -37,10 +41,14 @@ export class AuthMiddlewareService {
         email: true,
         verified: true,
         settings: {},
+        profiles: {
+          id: true,
+          role: true,
+        },
       },
     });
 
-    console.log('user---', currentUser);
+    console.log('--user--', currentUser);
 
     if (!currentUser)
       throw new CustomException(HttpStatus.UNAUTHORIZED, 'Not authorized');
