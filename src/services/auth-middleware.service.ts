@@ -48,8 +48,6 @@ export class AuthMiddlewareService {
       },
     });
 
-    console.log('--user--', currentUser);
-
     if (!currentUser)
       throw new CustomException(HttpStatus.UNAUTHORIZED, 'Not authorized');
 

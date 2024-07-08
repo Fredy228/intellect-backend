@@ -16,13 +16,15 @@ export class UniversityRepository extends Repository<University> {
         {
           id: idUniversity,
           moderators: {
-            user,
+            user: {
+              id: user.id,
+            },
           },
         },
         {
           id: idUniversity,
           owner: {
-            user,
+            id: user.id,
           },
         },
       ],

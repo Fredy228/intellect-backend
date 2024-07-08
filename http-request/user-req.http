@@ -32,7 +32,7 @@ Content-Type: application/json
 GET {{url}}api/auth/refresh
 Content-Type: application/json
 Access-Control-Allow-Credentials: true
-#Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhlaUBnbWFpbC5jb20iLCJpZCI6MSwiaWF0IjoxNzE5ODYxNDU0LCJleHAiOjE3MjA0NjYyNTR9.syZ7KyaPVQc6C5IAlg1_zGeo-AZcQpEMI1AKZONzMPo
+Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhlaUBnbWFpbC5jb20iLCJpZCI6MSwiaWF0IjoxNzIwMDA3NjcyLCJleHAiOjE3NTE1NDM2NzJ9.tILzWanwlU70iuSvwNRyufNimpEi0FvLAz8-7nR-c4U
 
 > {%
   client.global.set("accessToken", response.body.accessToken);
@@ -45,8 +45,8 @@ POST {{url}}api/auth/register
 Content-Type: application/json
 
 {
-  "email": "alexei@gmail.com",
+  "email": "pawel@gmail.com",
   "password": "Qawsed123",
-  "firstName": "Alexei",
-  "lastName": "Smahrovich"
+  "firstName": "Pawel",
+  "lastName": "Petrenko"
 }

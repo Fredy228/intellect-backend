@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   Param,
   Patch,
@@ -29,6 +30,7 @@ import {
   universityUpdateSchema,
 } from '../../joi-schema/universitySchema';
 import { UserAndProfileResponse } from '../user/swagger-response';
+import { University } from '../../entity/university/university.entity';
 
 @ApiTags('University')
 @Controller('api/university')
@@ -63,6 +65,27 @@ export class UniversityController {
       Number(idUniversity),
       body,
     );
+  }
+
+  @ApiOperation({
+    summary: 'Get profile university',
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    status: 200,
+    description: 'Get profile university successfully',
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    description: 'Invalid token or not found',
+  })
+  @Get('/:idUniversity')
+  @HttpCode(200)
+  @Roles()
+  async getProfile(
+    @Param('idUniversity') idUniversity: string,
+  ): Promise<University> {
+    return this.universityService.getProfileUni(Number(idUniversity));
   }
 
   @Post('/')

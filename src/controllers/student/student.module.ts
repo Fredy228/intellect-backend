@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { StudentController } from './student.controller';
 import { UniversityRepository } from '../../repository/university.repository';
@@ -8,10 +8,40 @@ import { University } from '../../entity/university/university.entity';
 import { User } from '../../entity/user/user.entity';
 import { Student } from '../../entity/user/student.entity';
 import { GroupRepository } from '../../repository/group.repository';
+import { ProtectAuthMiddleware } from '../../middlewares/protect-auth.middleware';
+import { AuthMiddlewareService } from '../../services/auth-middleware.service';
+import { XlsxService } from '../../services/xlsx.service';
 
 @Module({
-  providers: [StudentService, UniversityRepository, GroupRepository],
+  providers: [
+    StudentService,
+    UniversityRepository,
+    GroupRepository,
+    AuthMiddlewareService,
+    XlsxService,
+  ],
   controllers: [StudentController],
   imports: [TypeOrmModule.forFeature([User, Student])],
 })
-export class StudentModule {}
+export class StudentModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ProtectAuthMiddleware).forRoutes(
+      {
+        path: '/api/student/one/:idUniversity',
+        method: RequestMethod.POST,
+      },
+      {
+        path: '/api/student/many/:idUniversity',
+        method: RequestMethod.POST,
+      },
+      {
+        path: '/api/student/:idUniversity',
+        method: RequestMethod.GET,
+      },
+      {
+        path: '/api/student/:idStudent',
+        method: RequestMethod.DELETE,
+      },
+    );
+  }
+}

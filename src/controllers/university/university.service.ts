@@ -13,8 +13,6 @@ import { string } from 'joi';
 @Injectable()
 export class UniversityService {
   constructor(
-    // @InjectRepository(University)
-    // private universityRepo: Repository<University>,
     private readonly universityRepository: UniversityRepository,
     @InjectRepository(Owner)
     private ownerRepo: Repository<Owner>,
@@ -69,5 +67,39 @@ export class UniversityService {
 
       return newUniversity;
     });
+  }
+
+  async getProfileUni(idUniversity: number): Promise<University> {
+    if (!idUniversity)
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `Wrong id of University ID ${idUniversity}`,
+      );
+
+    const university = await this.universityRepository.findOne({
+      where: {
+        id: idUniversity,
+      },
+      select: {
+        id: true,
+        university_name: true,
+        university_short_name: true,
+        registration_year: true,
+        post_index_u: true,
+        contacts: true,
+        university_site: true,
+        count_students: true,
+        count_teachers: true,
+      },
+      relations: {
+        faculties: true,
+        owner: true,
+      },
+    });
+
+    if (!university)
+      throw new CustomException(HttpStatus.NOT_FOUND, `University not found`);
+
+    return university;
   }
 }

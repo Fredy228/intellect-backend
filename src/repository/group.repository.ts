@@ -24,7 +24,7 @@ export class GroupRepository extends Repository<Group> {
           id: idGroup,
           university: {
             owner: {
-              user,
+              id: user.id,
             },
           },
         },
@@ -32,7 +32,7 @@ export class GroupRepository extends Repository<Group> {
           id: idGroup,
           university: {
             moderators: {
-              user,
+              id: user.id,
             },
           },
         },

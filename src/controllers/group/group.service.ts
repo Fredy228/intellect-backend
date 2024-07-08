@@ -12,8 +12,6 @@ import { UniversityRepository } from '../../repository/university.repository';
 export class GroupService {
   constructor(
     @InjectRepository(Group) private groupRepository: Repository<Group>,
-    // @InjectRepository(University)
-    // private universityRepository: Repository<University>,
     private readonly universityRepository: UniversityRepository,
   ) {}
 
@@ -55,14 +53,16 @@ export class GroupService {
         {
           university: {
             moderators: {
-              user,
+              user: {
+                id: user.id,
+              },
             },
           },
         },
         {
           university: {
             owner: {
-              user,
+              id: user.id,
             },
           },
         },

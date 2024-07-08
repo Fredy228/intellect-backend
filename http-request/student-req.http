@@ -1,0 +1,14 @@
+# api/student/one/:idUniversity
+POST {{url}}api/student/one/1?idGroup=2
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "email": "vova@gmail.com"
+}
+
+###
+# api/student/:idUniversity
+GET {{url}}api/student/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}

@@ -24,6 +24,10 @@ export class UniversityModule {
         path: '/api/university/:idUniversity',
         method: RequestMethod.PATCH,
       },
+      {
+        path: '/api/university/:idUniversity',
+        method: RequestMethod.GET,
+      },
     );
   }
 }

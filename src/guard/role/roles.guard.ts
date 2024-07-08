@@ -20,7 +20,6 @@ export class RolesGuard implements CanActivate {
 
     const profiles = request?.user?.profiles;
     if (!profiles || !profiles.length) return false;
-    console.log('profiles', profiles);
 
     const foundProfile = profiles.find((item) => {
       return roles.includes(item.role);

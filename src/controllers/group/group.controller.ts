@@ -142,6 +142,7 @@ export class GroupController {
     summary: 'Delete group',
     description: 'Delete group by id',
   })
+  @ApiBearerAuth()
   @ApiOkResponse({
     status: 200,
     description: "You'll get a deleted group",
