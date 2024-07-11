@@ -5,7 +5,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { UniversityRepository } from '../../repository/university.repository';
 import { Student } from '../../entity/user/student.entity';
 import { User } from '../../entity/user/user.entity';
-import { AddStudentDto } from './student.dto';
+import { AddStudentDto, UpdateGroupStudentDto } from './student.dto';
 import { GroupRepository } from '../../repository/group.repository';
 import { CustomException } from '../../services/custom-exception';
 import { RoleEnum } from '../../enums/user/role-enum';
@@ -14,13 +14,13 @@ import { QueryGetAllType } from '../../types/query.type';
 import { generateFilterList } from '../../services/generate-filter-list';
 import { XlsxService } from '../../services/xlsx.service';
 import { studentOneCreateSchema } from '../../joi-schema/studentSchema';
-import { count } from 'rxjs';
+import { StudentRepository } from '../../repository/student.repository';
 
 @Injectable()
 export class StudentService {
   constructor(
-    @InjectRepository(Student) private studentRepository: Repository<Student>,
     @InjectRepository(User) private userRepository: Repository<User>,
+    private readonly studentRepository: StudentRepository,
     private readonly universityRepository: UniversityRepository,
     private readonly groupRepository: GroupRepository,
     private readonly entityManager: EntityManager,
@@ -264,54 +264,37 @@ export class StudentService {
   }
 
   async deleteById(user: User, idStudent: number) {
-    if (!idStudent)
-      throw new CustomException(
-        HttpStatus.BAD_REQUEST,
-        `Wrong id of Student ID ${idStudent}`,
-      );
-
-    const student = await this.studentRepository.findOne({
-      where: [
-        {
-          id: idStudent,
-          group: {
-            university: {
-              owner: {
-                user: {
-                  id: user.id,
-                },
-              },
-            },
-          },
-        },
-        {
-          id: idStudent,
-          group: {
-            university: {
-              moderators: {
-                user: {
-                  id: user.id,
-                },
-              },
-            },
-          },
-        },
-      ],
-      select: {
-        id: true,
-        title: true,
-        role: true,
-      },
-    });
-
-    if (!student)
-      throw new CustomException(
-        HttpStatus.NOT_FOUND,
-        `Not found Student ID ${idStudent} in your university`,
-      );
+    const student = await this.studentRepository.findOneByIdAndUser(
+      user,
+      idStudent,
+    );
 
     await this.studentRepository.delete(student.id);
 
     return student;
+  }
+
+  async changeGroupById(
+    user: User,
+    idStudent: number,
+    body: UpdateGroupStudentDto,
+  ) {
+    const student = await this.studentRepository.findOneByIdAndUser(
+      user,
+      idStudent,
+    );
+
+    const newGroup = await this.groupRepository.findOneByUser(
+      user,
+      body.groupId,
+    );
+
+    return this.entityManager.transaction(async (transaction) => {
+      await transaction.update(Student, student.id, {
+        group: newGroup,
+      });
+
+      return { ...student, group: newGroup };
+    });
   }
 }

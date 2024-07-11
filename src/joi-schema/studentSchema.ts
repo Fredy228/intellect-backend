@@ -14,3 +14,7 @@ export const studentOneCreateSchema = Joi.object().keys({
 export const studentManyCreateSchema = Joi.object().keys({
   groupId: Joi.array().items(Joi.number().integer()).required(),
 });
+
+export const studentChangeGroupSchema = Joi.object().keys({
+  groupId: Joi.number().integer().required(),
+});

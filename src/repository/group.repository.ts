@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { University } from '../entity/university/university.entity';
 import { Group } from '../entity/group/group.entity';
 import { User } from '../entity/user/user.entity';
 import { CustomException } from '../services/custom-exception';

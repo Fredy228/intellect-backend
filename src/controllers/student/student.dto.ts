@@ -12,3 +12,10 @@ export class AddManyStudentDto {
   })
   groupId: string;
 }
+
+export class UpdateGroupStudentDto {
+  @ApiProperty({
+    type: Number,
+  })
+  groupId: number;
+}

@@ -12,3 +12,19 @@ Authorization: Bearer {{accessToken}}
 GET {{url}}api/student/1
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
+
+###
+# api/student/:idStudent
+DELETE {{url}}api/student/11
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+###
+# api/student/:idStudent
+PATCH {{url}}api/student/10
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "groupId": 3
+}

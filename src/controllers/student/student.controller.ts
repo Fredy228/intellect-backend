@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -31,8 +32,13 @@ import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import { Roles } from '../../guard/role/roles.decorator';
 import { RoleEnum } from '../../enums/user/role-enum';
 import { User } from '../../entity/user/user.entity';
-import { AddManyStudentDto, AddStudentDto } from './student.dto';
 import {
+  AddManyStudentDto,
+  AddStudentDto,
+  UpdateGroupStudentDto,
+} from './student.dto';
+import {
+  studentChangeGroupSchema,
   studentManyCreateSchema,
   studentOneCreateSchema,
 } from '../../joi-schema/studentSchema';
@@ -42,6 +48,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { FileValidatorPipe } from '../../pipe/validator-file.pipe';
 import { CustomException } from '../../services/custom-exception';
 import { Profile } from '../../entity/user/proflle.entity';
+import { Student } from '../../entity/user/student.entity';
 
 @ApiTags('Student')
 @Controller('api/student')
@@ -75,7 +82,7 @@ export class StudentController {
     description: 'User already exists in group',
   })
   @Post('/one/:idUniversity')
-  @HttpCode(201)
+  @HttpCode(HttpStatus.CREATED)
   @UsePipes(new BodyValidationPipe(studentOneCreateSchema))
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async createOne(
@@ -180,7 +187,7 @@ export class StudentController {
     description: 'Invalid token or not found',
   })
   @Get('/:idUniversity')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   @Roles()
   async getAll(
     @Req() req: Request & { user: User },
@@ -214,7 +221,7 @@ export class StudentController {
     description: 'Invalid token or not found',
   })
   @Delete('/:idStudent')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async deleteById(
     @Req() req: Request & { user: User },
@@ -223,5 +230,33 @@ export class StudentController {
     return this.studentService.deleteById(req.user, Number(idStudent));
   }
 
-  // изменить группу студента
+  @ApiOperation({
+    summary: 'Update student',
+    description: 'Change group fro student in university',
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    status: 200,
+    description: 'Updated student',
+    type: PickType(Student, ['id', 'title', 'role', 'group']),
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    description: 'Invalid token or not found',
+  })
+  @Patch('/:idStudent')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new BodyValidationPipe(studentChangeGroupSchema))
+  @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
+  async changeGroupById(
+    @Req() req: Request & { user: User },
+    @Param('idStudent') idStudent: string,
+    @Body() body: UpdateGroupStudentDto,
+  ) {
+    return this.studentService.changeGroupById(
+      req.user,
+      Number(idStudent),
+      body,
+    );
+  }
 }

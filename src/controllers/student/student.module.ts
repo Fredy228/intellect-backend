@@ -11,6 +11,7 @@ import { GroupRepository } from '../../repository/group.repository';
 import { ProtectAuthMiddleware } from '../../middlewares/protect-auth.middleware';
 import { AuthMiddlewareService } from '../../services/auth-middleware.service';
 import { XlsxService } from '../../services/xlsx.service';
+import { StudentRepository } from '../../repository/student.repository';
 
 @Module({
   providers: [
@@ -19,6 +20,7 @@ import { XlsxService } from '../../services/xlsx.service';
     GroupRepository,
     AuthMiddlewareService,
     XlsxService,
+    StudentRepository,
   ],
   controllers: [StudentController],
   imports: [TypeOrmModule.forFeature([User, Student])],
@@ -41,6 +43,10 @@ export class StudentModule {
       {
         path: '/api/student/:idStudent',
         method: RequestMethod.DELETE,
+      },
+      {
+        path: '/api/student/:idStudent',
+        method: RequestMethod.PATCH,
       },
     );
   }
