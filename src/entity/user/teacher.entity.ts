@@ -11,6 +11,7 @@ export class Teacher extends Profile {
 
   @ManyToOne(() => University, (university) => university.teachers, {
     onDelete: 'CASCADE',
+    cascade: true,
   })
   university: University;
 }

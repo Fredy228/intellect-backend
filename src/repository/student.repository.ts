@@ -10,7 +10,7 @@ export class StudentRepository extends Repository<Student> {
     super(Student, dataSource.createEntityManager());
   }
 
-  async findOneByIdAndUser(user: User, idStudent: number) {
+  async findOneByIdAndUser(user: User, idStudent: number, withUni?: boolean) {
     if (!idStudent)
       throw new CustomException(
         HttpStatus.BAD_REQUEST,
@@ -48,7 +48,25 @@ export class StudentRepository extends Repository<Student> {
         id: true,
         title: true,
         role: true,
+        group: withUni
+          ? {
+              id: true,
+              name: true,
+              university: {
+                id: true,
+                university_short_name: true,
+                count_students: true,
+              },
+            }
+          : undefined,
       },
+      relations: withUni
+        ? {
+            group: {
+              university: true,
+            },
+          }
+        : {},
     });
 
     if (!student)

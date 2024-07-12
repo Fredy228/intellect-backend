@@ -1,5 +1,4 @@
 import * as Joi from 'joi';
-import { number } from 'joi';
 
 export const studentOneCreateSchema = Joi.object().keys({
   email: Joi.string()

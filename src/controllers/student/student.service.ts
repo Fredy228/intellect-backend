@@ -98,9 +98,12 @@ export class StudentService {
 
       await transaction.save(Student, student);
 
-      await transaction.update(University, group.university.id, {
-        count_students: group.university.count_students + 1,
-      });
+      await transaction
+        .createQueryBuilder()
+        .update(University)
+        .set({ count_students: () => 'count_students + 1' })
+        .where('id = :id', { id: group.university.id })
+        .execute();
 
       return userToStudent;
     });
@@ -267,11 +270,21 @@ export class StudentService {
     const student = await this.studentRepository.findOneByIdAndUser(
       user,
       idStudent,
+      true,
     );
 
-    await this.studentRepository.delete(student.id);
+    return this.entityManager.transaction(async (transaction) => {
+      await transaction.delete(Student, student.id);
 
-    return student;
+      await transaction
+        .createQueryBuilder()
+        .update(University)
+        .set({ count_students: () => 'count_students - 1' })
+        .where('id = :id', { id: student.group.university.id })
+        .execute();
+
+      return student;
+    });
   }
 
   async changeGroupById(

@@ -11,6 +11,7 @@ import { UserModule } from './controllers/user/user.module';
 import { GroupModule } from './controllers/group/group.module';
 import { UniversityModule } from './controllers/university/university.module';
 import { StudentModule } from './controllers/student/student.module';
+import { TeacherModule } from './controllers/teacher/teacher.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { StudentModule } from './controllers/student/student.module';
     GroupModule,
     UniversityModule,
     StudentModule,
+    TeacherModule,
   ],
   providers: [],
 })

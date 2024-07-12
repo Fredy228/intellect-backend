@@ -1,0 +1,22 @@
+# api/teacher/one/:idUniversity
+POST {{url}}api/teacher/one/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "email": "gosha@gmail.com",
+  "job_title": "Doctor Science"
+}
+
+###
+# api/teacher/:idUniversity
+GET {{url}}api/teacher/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+###
+# api/teacher/:idTeacher
+DELETE {{url}}api/teacher/14
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+

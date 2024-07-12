@@ -4,7 +4,7 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "email": "vova@gmail.com"
+  "email": "gosha@gmail.com"
 }
 
 ###
@@ -15,7 +15,7 @@ Authorization: Bearer {{accessToken}}
 
 ###
 # api/student/:idStudent
-DELETE {{url}}api/student/11
+DELETE {{url}}api/student/12
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 

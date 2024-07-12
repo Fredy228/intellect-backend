@@ -13,7 +13,6 @@ export class XlsxService {
         HttpStatus.BAD_REQUEST,
         `Sheet number ${sheet} not found`,
       );
-    console.log('sheetNames', sheetNames);
     const firstSheet = workbook.Sheets[sheetNames[sheet - 1]];
     const jsonData = XLSX.utils.sheet_to_json(firstSheet, { defval: null });
 
