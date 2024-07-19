@@ -2,6 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { User } from '../../entity/user/user.entity';
+import { RoleEnum } from '../../enums/user/role-enum';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -22,7 +23,7 @@ export class RolesGuard implements CanActivate {
     if (!profiles || !profiles.length) return false;
 
     const foundProfile = profiles.find((item) => {
-      return roles.includes(item.role);
+      return roles.includes(item.role) || roles.includes(RoleEnum.MAKER);
     });
 
     console.log('foundProfile', foundProfile);

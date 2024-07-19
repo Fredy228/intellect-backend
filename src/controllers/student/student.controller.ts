@@ -49,6 +49,7 @@ import { FileValidatorPipe } from '../../pipe/validator-file.pipe';
 import { CustomException } from '../../services/custom-exception';
 import { Profile } from '../../entity/user/proflle.entity';
 import { Student } from '../../entity/user/student.entity';
+import { ReqProtectedType } from '../../types/protect.type';
 
 @ApiTags('Student')
 @Controller('api/student')
@@ -86,7 +87,7 @@ export class StudentController {
   @UsePipes(new BodyValidationPipe(studentOneCreateSchema))
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async createOne(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Body() body: AddStudentDto,
     @Param('idUniversity') idUniversity: string,
     @Query('idGroup') idGroup: string,
@@ -130,7 +131,7 @@ export class StudentController {
   @UseInterceptors(FileFieldsInterceptor([{ name: 'file', maxCount: 10 }]))
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async createMany(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Param('idUniversity') idUniversity: string,
     @Body() body: AddManyStudentDto,
     @UploadedFiles()
@@ -190,7 +191,7 @@ export class StudentController {
   @HttpCode(HttpStatus.OK)
   @Roles()
   async getAll(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Param('idUniversity') idUniversity: string,
     @Query('idGroup') idGroup: string,
     @Query('range') range: string,
@@ -224,7 +225,7 @@ export class StudentController {
   @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async deleteById(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Param('idStudent') idStudent: string,
   ) {
     return this.studentService.deleteById(req.user, Number(idStudent));
@@ -249,7 +250,7 @@ export class StudentController {
   @UsePipes(new BodyValidationPipe(studentChangeGroupSchema))
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async changeGroupById(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Param('idStudent') idStudent: string,
     @Body() body: UpdateGroupStudentDto,
   ) {

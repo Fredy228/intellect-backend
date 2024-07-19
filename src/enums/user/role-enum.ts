@@ -3,4 +3,5 @@ export enum RoleEnum {
   MODER_UNIVERSITY = 'moder_university',
   STUDENT = 'student',
   TEACHER = 'teacher',
+  MAKER = 'maker',
 }

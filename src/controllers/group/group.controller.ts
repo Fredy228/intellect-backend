@@ -34,6 +34,7 @@ import {
 } from '../../joi-schema/groupSchema';
 import { UserAndProfileResponse } from '../user/swagger-response';
 import { Group } from '../../entity/group/group.entity';
+import { ReqProtectedType } from '../../types/protect.type';
 
 @ApiTags('Group')
 @Controller('api/group')
@@ -60,7 +61,7 @@ export class GroupController {
   @UsePipes(new BodyValidationPipe(groupCreateSchema))
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async create(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Body() body: GroupDto,
     @Param('idUniversity') idUniversity: string,
   ) {
@@ -86,7 +87,7 @@ export class GroupController {
   @UsePipes(new BodyValidationPipe(groupUpdateSchema))
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async update(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Body() body: Partial<GroupDto>,
     @Param('idGroup') idGroup: string,
   ) {
@@ -111,7 +112,7 @@ export class GroupController {
   @HttpCode(200)
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async getAllGroups(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Param('idUniversity') idUniversity: string,
   ) {
     return this.groupService.getAll(req.user, Number(idUniversity));
@@ -156,7 +157,7 @@ export class GroupController {
   @HttpCode(200)
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async delete(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Param('idGroup') idGroup: string,
   ) {
     return this.groupService.delete(req.user, Number(idGroup));

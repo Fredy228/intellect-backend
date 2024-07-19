@@ -11,6 +11,7 @@ import { Student } from '../entity/user/student.entity';
 import { Teacher } from '../entity/user/teacher.entity';
 import { Owner } from '../entity/user/owner.entity';
 import { Moderator } from '../entity/user/admin.entity';
+import { SupportMessage } from '../entity/support-message.entity';
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ const config: TypeOrmModuleOptions = {
     University,
     Faculty,
     Group,
+    SupportMessage,
   ],
   synchronize: process.env.PRODUCTION !== 'true', // В режиме разработки можно устанавливать в true, но в продакшене лучше false
   logging: process.env.PRODUCTION !== 'true',

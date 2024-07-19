@@ -47,7 +47,7 @@ export class University {
   registration_year: number;
 
   @ApiProperty()
-  @Column({ type: 'varchar', length: 10, nullable: true })
+  @Column({ type: 'varchar', length: 50, nullable: true })
   post_index_u: string;
 
   @ApiProperty()

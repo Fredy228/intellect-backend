@@ -13,6 +13,7 @@ import { Profile } from './proflle.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { CountryCode } from 'libphonenumber-js/types';
 import { PhoneNumberDto } from '../../controllers/user/user.dto';
+import { SupportMessage } from '../support-message.entity';
 
 @Entity({ name: 'user' })
 @Unique(['email'])
@@ -116,6 +117,12 @@ export class User {
   })
   @OneToMany(() => UserDevices, (device) => device.user)
   devices: UserDevices[];
+
+  @ApiProperty({
+    type: () => [SupportMessage],
+  })
+  @OneToMany(() => SupportMessage, (supportMessage) => supportMessage.user)
+  supportMessages: SupportMessage[];
 
   @ApiProperty({
     type: () => [Profile],

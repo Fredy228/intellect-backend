@@ -8,7 +8,12 @@ import { User } from '../../entity/user/user.entity';
 import { Owner } from '../../entity/user/owner.entity';
 import { RoleEnum } from '../../enums/user/role-enum';
 import { UniversityRepository } from '../../repository/university.repository';
-import { string } from 'joi';
+import axios, { isAxiosError } from 'axios';
+import * as dotenv from 'dotenv';
+import * as process from 'process';
+import { IUniversityEbo } from '../../interface/university-edbo.interface';
+
+dotenv.config();
 
 @Injectable()
 export class UniversityService {
@@ -16,6 +21,8 @@ export class UniversityService {
     private readonly universityRepository: UniversityRepository,
     @InjectRepository(Owner)
     private ownerRepo: Repository<Owner>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private readonly entityManager: EntityManager,
   ) {}
 
@@ -46,9 +53,26 @@ export class UniversityService {
   }
 
   async createNewUniversity(
-    user: User,
+    idUser: number,
     body: UniversityCreateDto,
   ): Promise<University> {
+    if (!idUser)
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `Wrong id of User ID ${idUser}`,
+      );
+    const user = await this.userRepository.findOne({
+      where: {
+        id: idUser,
+      },
+    });
+
+    if (!user)
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `Not found User ID ${idUser}`,
+      );
+
     return this.entityManager.transaction(async (transaction) => {
       const newOwner = transaction.create(Owner, {
         role: RoleEnum.OWNER_UNIVERSITY,
@@ -60,6 +84,88 @@ export class UniversityService {
 
       const newUniversity = transaction.create(University, {
         ...body,
+        owner: newOwner,
+      });
+
+      await transaction.save(newUniversity);
+
+      return newUniversity;
+    });
+  }
+
+  async createUniversityEdbo(idUser: number, edbo: number) {
+    if (!idUser)
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `Wrong id of User ID ${idUser}`,
+      );
+    if (!edbo)
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `Wrong id of University ID ${edbo}`,
+      );
+
+    const user = await this.userRepository.findOne({
+      where: {
+        id: idUser,
+      },
+    });
+
+    if (!user)
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `Not found User ID ${idUser}`,
+      );
+
+    const foundUniversity = await this.universityRepository.findOne({
+      where: {
+        university_id: edbo,
+      },
+    });
+
+    if (foundUniversity)
+      throw new CustomException(
+        HttpStatus.CONFLICT,
+        `University with ID ${edbo} already exist`,
+      );
+
+    const universityFromEdbo = await axios
+      .get<IUniversityEbo>(
+        `${process.env.EDBO_URL}/api/university/?id=${edbo}&exp=json`,
+      )
+      .then((res) => res.data)
+      .catch((e) => {
+        if (isAxiosError(e) && e.status === 404) {
+          throw new CustomException(
+            HttpStatus.NOT_FOUND,
+            `Not found University ID ${edbo} in EDBO`,
+          );
+        } else {
+          throw new CustomException(
+            HttpStatus.BAD_REQUEST,
+            `Error getting university`,
+          );
+        }
+      });
+
+    return this.entityManager.transaction(async (transaction) => {
+      const newOwner = transaction.create(Owner, {
+        role: RoleEnum.OWNER_UNIVERSITY,
+        title: `Власник ${universityFromEdbo.university_short_name}`,
+        user,
+      });
+
+      await transaction.save(newOwner);
+
+      const newUniversity = transaction.create(University, {
+        university_id: Number(universityFromEdbo.university_id),
+        university_parent_id:
+          Number(universityFromEdbo.university_parent_id) || null,
+        university_name: universityFromEdbo.university_name,
+        university_short_name: universityFromEdbo.university_short_name || null,
+        post_index_u: universityFromEdbo.post_index_u || null,
+        university_site: universityFromEdbo.university_site,
+        registration_year: Number(universityFromEdbo.registration_year) || null,
         owner: newOwner,
       });
 

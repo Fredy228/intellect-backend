@@ -6,13 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -23,14 +23,13 @@ import { Roles } from '../../guard/role/roles.decorator';
 import { RoleEnum } from '../../enums/user/role-enum';
 import { UniversityService } from './university.service';
 import { UniversityCreateDto, UniversityUpdateDto } from './university.dto';
-import { User } from '../../entity/user/user.entity';
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import {
   universityCreateSchema,
   universityUpdateSchema,
 } from '../../joi-schema/universitySchema';
-import { UserAndProfileResponse } from '../user/swagger-response';
 import { University } from '../../entity/university/university.entity';
+import { ReqProtectedType } from '../../types/protect.type';
 
 @ApiTags('University')
 @Controller('api/university')
@@ -56,7 +55,7 @@ export class UniversityController {
   @UsePipes(new BodyValidationPipe(universityUpdateSchema))
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async updateInfo(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Param('idUniversity') idUniversity: string,
     @Body() body: UniversityUpdateDto,
   ) {
@@ -91,11 +90,31 @@ export class UniversityController {
   @Post('/')
   @HttpCode(201)
   @UsePipes(new BodyValidationPipe(universityCreateSchema))
-  @Roles()
+  @Roles(RoleEnum.MAKER)
   async createNewUniversity(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Body() body: UniversityCreateDto,
+    @Query('id') idUser: string,
   ) {
-    return this.universityService.createNewUniversity(req.user, body);
+    return this.universityService.createNewUniversity(Number(idUser), body);
   }
+
+  @Post('/edbo/university/:edbo')
+  @HttpCode(201)
+  @Roles(RoleEnum.MAKER)
+  async createUniversityByEdbo(
+    @Req() req: ReqProtectedType,
+    @Query('id') idUser: string,
+    @Param('edbo') edbo: string,
+  ) {
+    return this.universityService.createUniversityEdbo(
+      Number(idUser),
+      Number(edbo),
+    );
+  }
+
+  // @Post('/edbo/school/:edbo')
+  // @HttpCode(201)
+  // @Roles(RoleEnum.MAKER)
+  // async createSchoolByEdbo(@Req() req: ReqProtectedType) {}
 }

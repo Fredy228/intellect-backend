@@ -44,6 +44,7 @@ import { studentManyCreateSchema } from '../../joi-schema/studentSchema';
 import { CustomException } from '../../services/custom-exception';
 import { parseQueryGetAll } from '../../services/generate-filter-list';
 import { Profile } from '../../entity/user/proflle.entity';
+import { ReqProtectedType } from '../../types/protect.type';
 
 @ApiTags('Teacher')
 @Controller('api/teacher')
@@ -77,7 +78,7 @@ export class TeacherController {
   @UsePipes(new BodyValidationPipe(teacherOneCreateSchema))
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async createOne(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Body() body: AddTeacherDto,
     @Param('idUniversity') idUniversity: string,
   ) {
@@ -115,7 +116,7 @@ export class TeacherController {
   @UseInterceptors(FileFieldsInterceptor([{ name: 'file', maxCount: 1 }]))
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async createMany(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Param('idUniversity') idUniversity: string,
     @UploadedFiles()
     files: {
@@ -162,7 +163,7 @@ export class TeacherController {
   @HttpCode(HttpStatus.OK)
   @Roles()
   async getAll(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Param('idUniversity') idUniversity: string,
     @Query('range') range: string,
     @Query('filter') filter: string,
@@ -191,7 +192,7 @@ export class TeacherController {
   @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async deleteById(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Param('idTeacher') idTeacher: string,
   ) {
     return this.teacherService.deleteById(req.user, Number(idTeacher));

@@ -21,6 +21,14 @@ export class UniversityModule {
         method: RequestMethod.POST,
       },
       {
+        path: '/api/university/edbo/university/:edbo',
+        method: RequestMethod.POST,
+      },
+      {
+        path: '/api/university/edbo/school/:edbo',
+        method: RequestMethod.POST,
+      },
+      {
         path: '/api/university/:idUniversity',
         method: RequestMethod.PATCH,
       },
