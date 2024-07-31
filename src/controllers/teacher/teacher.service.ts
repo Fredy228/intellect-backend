@@ -9,11 +9,9 @@ import { CustomException } from '../../services/custom-exception';
 import { TeacherRepository } from '../../repository/teacher.repository';
 import { RoleEnum } from '../../enums/user/role-enum';
 import { University } from '../../entity/university/university.entity';
-import { studentOneCreateSchema } from '../../joi-schema/studentSchema';
 import { teacherOneCreateSchema } from '../../joi-schema/teacherSchema';
 import { QueryGetAllType } from '../../types/query.type';
 import { generateFilterList } from '../../services/generate-filter-list';
-import { Student } from '../../entity/user/student.entity';
 import { Teacher } from '../../entity/user/teacher.entity';
 
 @Injectable()
@@ -42,7 +40,7 @@ export class TeacherService {
       idUniversity,
     );
 
-    const userToStudent = await this.userRepository.findOne({
+    const userToTeacher = await this.userRepository.findOne({
       where: { email },
       select: {
         id: true,
@@ -54,7 +52,7 @@ export class TeacherService {
         verified: true,
       },
     });
-    if (!userToStudent)
+    if (!userToTeacher)
       throw new CustomException(
         HttpStatus.BAD_REQUEST,
         `User with email ${email} not found`,
@@ -65,7 +63,7 @@ export class TeacherService {
         title: `Викладач ${university.university_short_name}`,
         job_title,
         role: RoleEnum.TEACHER,
-        user,
+        user: userToTeacher,
         university,
       });
 
@@ -78,7 +76,7 @@ export class TeacherService {
         .where('id = :id', { id: university.id })
         .execute();
 
-      return userToStudent;
+      return userToTeacher;
     });
   }
 

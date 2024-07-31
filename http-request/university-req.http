@@ -1,4 +1,4 @@
-POST {{url}}api/university
+POST {{url}}api/university?id=4
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
@@ -17,5 +17,14 @@ Authorization: Bearer {{accessToken}}
 }
 
 ###
+
+# api/university/admin/:idUniversity
+POST {{url}}api/university/admin/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "email": "fredy@gmail.com"
+}
 
 

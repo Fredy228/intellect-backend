@@ -32,7 +32,7 @@ Content-Type: application/json
 GET {{url}}api/auth/refresh
 Content-Type: application/json
 Access-Control-Allow-Credentials: true
-Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhlaUBnbWFpbC5jb20iLCJpZCI6MSwiaWF0IjoxNzIwMjY4MzY1LCJleHAiOjE3NTE4MDQzNjV9.baalPezQCrFrP_sW59j7tzDEIoAZYzeqrbRPQp6yNME
+Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhlaUBnbWFpbC5jb20iLCJpZCI6MSwiaWF0IjoxNzIyMjM4MTYxLCJleHAiOjE3NTM3NzQxNjF9.gSywnPM1EfiA9AlzTDCdBfrqmvuWeM5_S6ikWqqY6U0
 
 > {%
   client.global.set("accessToken", response.body.accessToken);

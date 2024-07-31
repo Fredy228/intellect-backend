@@ -16,6 +16,7 @@ import { Group } from '../group/group.entity';
 import { Teacher } from '../user/teacher.entity';
 import { Moderator } from '../user/admin.entity';
 import { Owner } from '../user/owner.entity';
+import { Subject } from './subject.entity';
 
 @Entity({ name: 'university' })
 export class University {
@@ -92,6 +93,12 @@ export class University {
   })
   @OneToMany(() => Faculty, (faculty) => faculty.university)
   faculties: Faculty[];
+
+  @ApiProperty({
+    type: () => [Faculty],
+  })
+  @OneToMany(() => Subject, (subject) => subject.university)
+  subjects: Subject[];
 
   @ApiProperty({
     type: () => [Teacher],

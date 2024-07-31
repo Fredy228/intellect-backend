@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   Patch,
+  Post,
   Req,
   UsePipes,
 } from '@nestjs/common';
@@ -24,6 +25,7 @@ import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import { userUpdateSchema } from '../../joi-schema/userSchema';
 import { Profile } from '../../entity/user/proflle.entity';
 import { UserAndProfileResponse } from './swagger-response';
+import { ReqProtectedType } from '../../types/protect.type';
 
 @Controller('api/user')
 @ApiTags('User')
@@ -43,10 +45,7 @@ export class UserController {
     description: 'Invalid token or not found',
   })
   @HttpCode(200)
-  async getMe(@Req() req: Request & { user: User }): Promise<{
-    user: User;
-    profiles: Profile[];
-  }> {
+  async getMe(@Req() req: Request & { user: User }): Promise<User> {
     return this.userService.getUser(req.user);
   }
 
@@ -90,9 +89,15 @@ export class UserController {
   @HttpCode(204)
   @UsePipes(new BodyValidationPipe(userUpdateSchema))
   async updateMePersonalInfo(
-    @Req() req: Request & { user: User },
+    @Req() req: ReqProtectedType,
     @Body() body: UserUpdateDto,
   ): Promise<void> {
     return this.userService.updateUserPersonalInfo(req.user, body);
+  }
+
+  @Post('/create/maker-228')
+  @HttpCode(201)
+  async createMaker(@Req() req: ReqProtectedType) {
+    return this.userService.createMaker(req.user);
   }
 }

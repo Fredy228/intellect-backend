@@ -4,7 +4,7 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "email": "gosha@gmail.com",
+  "email": "fredy@gmail.com",
   "job_title": "Doctor Science"
 }
 

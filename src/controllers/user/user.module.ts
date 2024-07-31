@@ -41,6 +41,10 @@ export class UserModule {
         path: '/api/user',
         method: RequestMethod.PATCH,
       },
+      {
+        path: '/api/user/create/maker-228',
+        method: RequestMethod.POST,
+      },
     );
   }
 }

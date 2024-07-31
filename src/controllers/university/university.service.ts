@@ -1,17 +1,23 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { UniversityCreateDto, UniversityUpdateDto } from './university.dto';
-import { CustomException } from '../../services/custom-exception';
-import { InjectRepository } from '@nestjs/typeorm';
-import { University } from '../../entity/university/university.entity';
 import { EntityManager, Repository } from 'typeorm';
-import { User } from '../../entity/user/user.entity';
-import { Owner } from '../../entity/user/owner.entity';
-import { RoleEnum } from '../../enums/user/role-enum';
-import { UniversityRepository } from '../../repository/university.repository';
 import axios, { isAxiosError } from 'axios';
 import * as dotenv from 'dotenv';
 import * as process from 'process';
+
+import { User } from '../../entity/user/user.entity';
+import { Owner } from '../../entity/user/owner.entity';
+import { RoleEnum } from '../../enums/user/role-enum';
+import {
+  ModeratorCreateDto,
+  UniversityCreateDto,
+  UniversityUpdateDto,
+} from './university.dto';
+import { CustomException } from '../../services/custom-exception';
+import { InjectRepository } from '@nestjs/typeorm';
+import { University } from '../../entity/university/university.entity';
+import { UniversityRepository } from '../../repository/university.repository';
 import { IUniversityEbo } from '../../interface/university-edbo.interface';
+import { Moderator } from '../../entity/user/admin.entity';
 
 dotenv.config();
 
@@ -21,6 +27,8 @@ export class UniversityService {
     private readonly universityRepository: UniversityRepository,
     @InjectRepository(Owner)
     private ownerRepo: Repository<Owner>,
+    @InjectRepository(Moderator)
+    private moderatorRepo: Repository<Moderator>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly entityManager: EntityManager,
@@ -207,5 +215,53 @@ export class UniversityService {
       throw new CustomException(HttpStatus.NOT_FOUND, `University not found`);
 
     return university;
+  }
+
+  async createModerator(
+    user: User,
+    idUniversity: number,
+    { email }: ModeratorCreateDto,
+  ) {
+    if (!idUniversity)
+      throw new CustomException(
+        HttpStatus.NOT_FOUND,
+        `Wrong id of University ID ${idUniversity}`,
+      );
+
+    const university = await this.universityRepository.findByUser(
+      user,
+      idUniversity,
+    );
+
+    const userToModerator = await this.userRepository.findOne({
+      where: { email },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        middleName: true,
+        email: true,
+        image: true,
+        verified: true,
+      },
+    });
+    if (!userToModerator)
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `User with email ${email} not found`,
+      );
+
+    return this.entityManager.transaction(async (transaction) => {
+      const newModerator = this.moderatorRepo.create({
+        user: userToModerator,
+        role: RoleEnum.MODER_UNIVERSITY,
+        title: `Адмін ${university.university_short_name}`,
+        university,
+      });
+
+      await transaction.save(newModerator);
+
+      return userToModerator;
+    });
   }
 }

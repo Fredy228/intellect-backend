@@ -32,3 +32,8 @@ export class UniversityCreateDto {
   @ApiProperty()
   university_short_name: string;
 }
+
+export class ModeratorCreateDto {
+  @ApiProperty()
+  email: string;
+}

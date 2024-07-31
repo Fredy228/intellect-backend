@@ -7,17 +7,22 @@ import { AuthMiddlewareService } from '../../services/auth-middleware.service';
 import { User } from '../../entity/user/user.entity';
 import { Owner } from '../../entity/user/owner.entity';
 import { UniversityRepository } from '../../repository/university.repository';
+import { Moderator } from '../../entity/user/admin.entity';
 
 @Module({
   controllers: [UniversityController],
   providers: [UniversityService, AuthMiddlewareService, UniversityRepository],
-  imports: [TypeOrmModule.forFeature([User, Owner])],
+  imports: [TypeOrmModule.forFeature([User, Owner, Moderator])],
 })
 export class UniversityModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(ProtectAuthMiddleware).forRoutes(
       {
         path: '/api/university',
+        method: RequestMethod.POST,
+      },
+      {
+        path: '/api/university/admin/:idUniversity',
         method: RequestMethod.POST,
       },
       {

@@ -41,9 +41,11 @@ export class AuthMiddlewareService {
         email: true,
         verified: true,
         settings: {},
+        security: {},
         profiles: {
           id: true,
           role: true,
+          title: true,
         },
       },
     });

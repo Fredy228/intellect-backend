@@ -8,7 +8,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserAction, UserSetting } from '../../types/user-type';
+import { TUserSecurity, UserAction, UserSetting } from '../../types/user-type';
 import { Profile } from './proflle.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { CountryCode } from 'libphonenumber-js/types';
@@ -94,6 +94,24 @@ export class User {
     type: 'jsonb',
   })
   actions: UserAction;
+
+  @ApiProperty({
+    type: 'object',
+    example: {
+      login_attempts: 'number | null',
+      login_time: 'number | null',
+      is_block: 'boolean',
+    },
+  })
+  @Column({
+    type: 'jsonb',
+    default: {
+      login_time: null,
+      login_attempts: null,
+      is_block: false,
+    },
+  })
+  security: TUserSecurity;
 
   @ApiProperty()
   @CreateDateColumn({

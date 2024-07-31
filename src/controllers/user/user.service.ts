@@ -1,5 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as dotenv from 'dotenv';
+import * as process from 'process';
+
 import { User, UserDevices } from '../../entity/user/user.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { UserUpdateDto } from './user.dto';
@@ -11,6 +14,8 @@ import { Student } from '../../entity/user/student.entity';
 import { Teacher } from '../../entity/user/teacher.entity';
 import { Owner } from '../../entity/user/owner.entity';
 import { Moderator } from '../../entity/user/admin.entity';
+
+dotenv.config();
 
 @Injectable()
 export class UserService {
@@ -32,23 +37,7 @@ export class UserService {
     private readonly entityManager: EntityManager,
   ) {}
 
-  async getUser(user: User): Promise<{
-    user: User;
-    profiles: Profile[];
-  }> {
-    // let profile = undefined;
-
-    const profiles = await this.profileRepository.find({
-      where: {
-        user,
-      },
-      select: {
-        id: true,
-        role: true,
-        title: true,
-      },
-    });
-
+  async getUser(user: User): Promise<User> {
     // if (Number(profileId)) {
     //   const currProfile = profiles.find((i) => i.id === profileId);
     //   if (!currProfile)
@@ -84,7 +73,7 @@ export class UserService {
     //   }
     // }
 
-    return { user, profiles };
+    return user;
   }
 
   async updateUserPersonalInfo(user: User, body: UserUpdateDto): Promise<void> {
@@ -147,5 +136,21 @@ export class UserService {
       throw new CustomException(HttpStatus.NOT_FOUND, 'User not found');
 
     return foundProfile;
+  }
+
+  async createMaker(user: User) {
+    const is_allow = process.env.MAKER_CREATE_ALLOW;
+    if (!is_allow || !Number(is_allow))
+      throw new CustomException(HttpStatus.METHOD_NOT_ALLOWED, 'Not allow');
+
+    const newProfile = this.profileRepository.create({
+      user,
+      role: RoleEnum.MAKER,
+      title: 'God',
+    });
+
+    await this.profileRepository.save(newProfile);
+
+    return newProfile;
   }
 }

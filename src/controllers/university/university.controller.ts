@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -13,23 +14,31 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
+  PickType,
 } from '@nestjs/swagger';
 import { RolesGuard } from '../../guard/role/roles.guard';
 import { Roles } from '../../guard/role/roles.decorator';
 import { RoleEnum } from '../../enums/user/role-enum';
 import { UniversityService } from './university.service';
-import { UniversityCreateDto, UniversityUpdateDto } from './university.dto';
+import {
+  ModeratorCreateDto,
+  UniversityCreateDto,
+  UniversityUpdateDto,
+} from './university.dto';
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import {
+  AdminOneCreateSchema,
   universityCreateSchema,
   universityUpdateSchema,
 } from '../../joi-schema/universitySchema';
 import { University } from '../../entity/university/university.entity';
 import { ReqProtectedType } from '../../types/protect.type';
+import { User } from '../../entity/user/user.entity';
 
 @ApiTags('University')
 @Controller('api/university')
@@ -117,4 +126,41 @@ export class UniversityController {
   // @HttpCode(201)
   // @Roles(RoleEnum.MAKER)
   // async createSchoolByEdbo(@Req() req: ReqProtectedType) {}
+
+  @ApiOperation({
+    summary: 'Create one moderator',
+    description: 'Create one moderator in university',
+  })
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    status: 201,
+    description: 'Created moderator',
+    type: PickType(User, [
+      'id',
+      'firstName',
+      'lastName',
+      'sex',
+      'middleName',
+      'email',
+    ]),
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    description: 'Invalid token or not found',
+  })
+  @Post('/admin/:idUniversity')
+  @HttpCode(HttpStatus.CREATED)
+  @UsePipes(new BodyValidationPipe(AdminOneCreateSchema))
+  @Roles(RoleEnum.OWNER_UNIVERSITY)
+  async createAdmin(
+    @Req() req: ReqProtectedType,
+    @Body() body: ModeratorCreateDto,
+    @Param('idUniversity') idUniversity: string,
+  ) {
+    return this.universityService.createModerator(
+      req.user,
+      Number(idUniversity),
+      body,
+    );
+  }
 }

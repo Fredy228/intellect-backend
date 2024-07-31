@@ -13,8 +13,6 @@ export class ProtectAuthMiddleware implements NestMiddleware {
       req.headers.authorization,
     );
 
-    console.log('access_token', token);
-
     if (!token)
       throw new CustomException(HttpStatus.UNAUTHORIZED, 'Not authorized');
 

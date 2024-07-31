@@ -39,3 +39,13 @@ export const universityUpdateSchema = Joi.object().keys({
     }),
   ),
 });
+
+export const AdminOneCreateSchema = Joi.object().keys({
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
+    .required()
+    .messages({
+      'string.email': 'The email is incorrect',
+      'string.empty': 'The email is empty.',
+    }),
+});

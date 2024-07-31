@@ -51,15 +51,63 @@ export class AuthService {
         HttpStatus.UNAUTHORIZED,
         `Username or password is wrong`,
       );
+
+    const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
+
+    if (user?.security?.is_block)
+      throw new CustomException(423, `User blocked`);
+
+    const is_time_try =
+      user?.security?.login_time &&
+      new Date().getTime() - new Date(user.security.login_time).getTime() <
+        3600 * 1000;
+    if (is_time_try) {
+      const time_try =
+        new Date(user?.security?.login_time).getTime() +
+        3600 * 1000 -
+        new Date().getTime();
+      throw new CustomException(
+        425,
+        `Try again in ${Math.round(time_try / 1000 / 60)} minutes`,
+      );
+    }
+
     const isValidPass = await checkPassword(password, user.password);
 
-    if (!isValidPass)
+    if (!isValidPass) {
+      console.log(user?.security);
+      if (
+        user?.security?.login_attempts === 5 ||
+        user?.security?.login_attempts === 10
+      ) {
+        user.security.login_time = new Date();
+        await this.usersRepository.save(user);
+      }
+
+      if (user?.security?.login_attempts > 14) {
+        user.security.is_block = true;
+        await this.usersRepository.save(user);
+      }
+
+      user.security.login_attempts = user.security.login_attempts
+        ? user.security.login_attempts + 1
+        : 1;
+      user.security.device_try = deviceModel;
+      await this.usersRepository.save(user);
+
       throw new CustomException(
         HttpStatus.UNAUTHORIZED,
         `Username or password is wrong`,
       );
+    }
 
-    const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
+    await this.usersRepository.update(user.id, {
+      security: {
+        login_attempts: null,
+        login_time: null,
+        is_block: false,
+      },
+    });
 
     await this.deleteOldSession(user.devices);
 
@@ -97,6 +145,11 @@ export class AuthService {
       lastName,
       actions: { timeAt: null, code: null, numberTries: 0 },
       settings: { profileDefault: null },
+      security: {
+        is_block: false,
+        login_attempts: null,
+        login_time: null,
+      },
     });
     await this.usersRepository.save(newUser);
 
@@ -119,6 +172,9 @@ export class AuthService {
     const deviceModel = `${userAgent.platform} ${userAgent.os} ${userAgent.browser}`;
 
     if (currentUser) {
+      if (currentUser?.security?.is_block)
+        throw new CustomException(423, `User blocked`);
+
       await this.deleteOldSession(currentUser.devices);
 
       const tokens = await this.addDeviceAuth(deviceModel, currentUser);
@@ -133,6 +189,11 @@ export class AuthService {
         password: hashPass,
         actions: { timeAt: null, code: null, numberTries: 0 },
         settings: { profileDefault: null },
+        security: {
+          is_block: false,
+          login_attempts: null,
+          login_time: null,
+        },
       });
 
       await this.usersRepository.save(newUser);
@@ -156,9 +217,10 @@ export class AuthService {
         `Login from an untrusted device`,
       );
 
-    const newTokens = this.createToken(user);
+    if (user?.security?.is_block)
+      throw new CustomException(423, `User blocked`);
 
-    console.log(newTokens);
+    const newTokens = this.createToken(user);
 
     const res = await this.devicesRepository.update(currentDevice.id, {
       accessToken: newTokens.accessToken,
