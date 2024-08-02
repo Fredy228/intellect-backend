@@ -146,7 +146,7 @@ export class UserService {
     const newProfile = this.profileRepository.create({
       user,
       role: RoleEnum.MAKER,
-      title: 'God',
+      title: 'Dev',
     });
 
     await this.profileRepository.save(newProfile);

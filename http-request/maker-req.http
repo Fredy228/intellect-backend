@@ -1,0 +1,5 @@
+# Create Maker
+POST {{url}}api/user/create/maker-228
+Content-Type: application/json
+
+###
