@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import { User } from '../entity/user/user.entity';
+import { User } from 'lib-intellecta-entity';
+
 import { AuthMiddlewareService } from '../services/auth-middleware.service';
 import { CustomException } from '../services/custom-exception';
 

@@ -1,5 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { Student } from '../../entity/user/student.entity';
+import { Student } from 'lib-intellecta-entity';
 
 export class GetAllStudentResponse {
   @ApiProperty({

@@ -17,7 +17,6 @@ import {
 import { TeacherService } from './teacher.service';
 import {
   ApiBearerAuth,
-  ApiConflictResponse,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
@@ -26,11 +25,12 @@ import {
   ApiUnauthorizedResponse,
   PickType,
 } from '@nestjs/swagger';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { User, Profile, RoleEnum } from 'lib-intellecta-entity';
+
 import { RolesGuard } from '../../guard/role/roles.guard';
-import { User } from '../../entity/user/user.entity';
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import { Roles } from '../../guard/role/roles.decorator';
-import { RoleEnum } from '../../enums/user/role-enum';
 import { AddTeacherDto } from './teacher.dto';
 import { teacherOneCreateSchema } from '../../joi-schema/teacherSchema';
 import {
@@ -38,12 +38,7 @@ import {
   GetAllStudentResponse,
 } from '../student/student.response';
 import { FileValidatorPipe } from '../../pipe/validator-file.pipe';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { AddManyStudentDto } from '../student/student.dto';
-import { studentManyCreateSchema } from '../../joi-schema/studentSchema';
-import { CustomException } from '../../services/custom-exception';
 import { parseQueryGetAll } from '../../services/generate-filter-list';
-import { Profile } from '../../entity/user/proflle.entity';
 import { ReqProtectedType } from '../../types/protect.type';
 
 @ApiTags('Teacher')

@@ -1,15 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
+import { Student, User, RoleEnum, University } from 'lib-intellecta-entity';
 
 import { UniversityRepository } from '../../repository/university.repository';
-import { Student } from '../../entity/user/student.entity';
-import { User } from '../../entity/user/user.entity';
 import { AddStudentDto, UpdateGroupStudentDto } from './student.dto';
 import { GroupRepository } from '../../repository/group.repository';
 import { CustomException } from '../../services/custom-exception';
-import { RoleEnum } from '../../enums/user/role-enum';
-import { University } from '../../entity/university/university.entity';
 import { QueryGetAllType } from '../../types/query.type';
 import { generateFilterList } from '../../services/generate-filter-list';
 import { XlsxService } from '../../services/xlsx.service';

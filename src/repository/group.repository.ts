@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Group } from '../entity/group/group.entity';
-import { User } from '../entity/user/user.entity';
+import { Group, User } from 'lib-intellecta-entity';
+
 import { CustomException } from '../services/custom-exception';
 
 @Injectable()

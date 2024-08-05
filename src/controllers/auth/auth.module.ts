@@ -1,9 +1,9 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
+import { User, UserDevices } from 'lib-intellecta-entity';
 
 import { AuthController } from './auth.controller';
-import { User, UserDevices } from '../../entity/user/user.entity';
 import { AuthService } from './auth.service';
 import { ProtectRefreshMiddleware } from '../../middlewares/protect-refresh.middleware';
 import { UserAgentMiddleware } from '../../middlewares/user-agent.middleware';

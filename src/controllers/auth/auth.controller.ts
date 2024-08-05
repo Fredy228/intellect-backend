@@ -13,6 +13,7 @@ import { Request, Response } from 'express';
 import * as dotenv from 'dotenv';
 import * as process from 'process';
 import { ApiOperation, ApiResponse, ApiTags, OmitType } from '@nestjs/swagger';
+import { User, UserDevices } from 'lib-intellecta-entity';
 
 dotenv.config();
 
@@ -22,7 +23,6 @@ import { AuthService } from './auth.service';
 
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import { userCreateSchema } from '../../joi-schema/userSchema';
-import { User, UserDevices } from '../../entity/user/user.entity';
 
 const CLIENT_URL = process.env.CLIENT_URL;
 const MAX_AGE = 7 * 24 * 60 * 60 * 1000;

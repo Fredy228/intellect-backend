@@ -21,11 +21,12 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { RoleEnum, SupportMessage } from 'lib-intellecta-entity';
+
 import { RolesGuard } from '../../guard/role/roles.guard';
 import { SupportMessageService } from './support-message.service';
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import { Roles } from '../../guard/role/roles.decorator';
-import { RoleEnum } from '../../enums/user/role-enum';
 import {
   supportMessageCreateSchema,
   supportMessageUpdateSchema,
@@ -37,7 +38,6 @@ import {
 } from './support-message.dto';
 import { parseQueryGetAll } from '../../services/generate-filter-list';
 import { GetAllSupportMessagesResponse } from './support-message.response';
-import { SupportMessage } from '../../entity/support-message.entity';
 
 @ApiTags('Support')
 @Controller('api/support-message')

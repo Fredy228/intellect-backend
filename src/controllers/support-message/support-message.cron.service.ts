@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SupportMessage } from '../../entity/support-message.entity';
+import { SupportMessage, ESupportMessagesStatus } from 'lib-intellecta-entity';
 import { LessThan, Repository } from 'typeorm';
-import { ESupportMessagesStatus } from '../../enums/user/support-messages.enum';
 import { subMonths } from 'date-fns';
 
 @Injectable()

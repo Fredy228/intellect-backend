@@ -1,5 +1,5 @@
 import * as Joi from 'joi';
-import { ESupportMessagesStatus } from '../enums/user/support-messages.enum';
+import { ESupportMessagesStatus } from 'lib-intellecta-entity';
 
 export const supportMessageCreateSchema = Joi.object().keys({
   title: Joi.string().min(2).max(300).required().messages({

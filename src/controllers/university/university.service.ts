@@ -1,23 +1,25 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import axios, { isAxiosError } from 'axios';
 import * as dotenv from 'dotenv';
 import * as process from 'process';
+import {
+  User,
+  Owner,
+  RoleEnum,
+  Moderator,
+  University,
+} from 'lib-intellecta-entity';
 
-import { User } from '../../entity/user/user.entity';
-import { Owner } from '../../entity/user/owner.entity';
-import { RoleEnum } from '../../enums/user/role-enum';
 import {
   ModeratorCreateDto,
   UniversityCreateDto,
   UniversityUpdateDto,
 } from './university.dto';
 import { CustomException } from '../../services/custom-exception';
-import { InjectRepository } from '@nestjs/typeorm';
-import { University } from '../../entity/university/university.entity';
 import { UniversityRepository } from '../../repository/university.repository';
 import { IUniversityEbo } from '../../interface/university-edbo.interface';
-import { Moderator } from '../../entity/user/admin.entity';
 
 dotenv.config();
 

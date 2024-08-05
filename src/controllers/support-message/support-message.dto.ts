@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ESupportMessagesStatus } from '../../enums/user/support-messages.enum';
+import { ESupportMessagesStatus } from 'lib-intellecta-entity';
 
 export class SupportMessageDto {
   @ApiProperty()

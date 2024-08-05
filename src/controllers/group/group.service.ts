@@ -1,10 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type Repository } from 'typeorm';
-import { Group } from '../../entity/group/group.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../entity/user/user.entity';
+import { Group, User } from 'lib-intellecta-entity';
+
 import { GroupDto } from './group.dto';
-import { University } from '../../entity/university/university.entity';
 import { CustomException } from '../../services/custom-exception';
 import { UniversityRepository } from '../../repository/university.repository';
 

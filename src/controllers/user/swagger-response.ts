@@ -1,6 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { User } from '../../entity/user/user.entity';
-import { Profile } from '../../entity/user/proflle.entity';
+import { User, Profile } from 'lib-intellecta-entity';
 
 export class UserAndProfileResponse {
   @ApiProperty({ type: [Profile] })

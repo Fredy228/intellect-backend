@@ -8,9 +8,7 @@ import {
   Req,
   UsePipes,
 } from '@nestjs/common';
-import { UserService } from './user.service';
 import { Request } from 'express';
-import { User } from '../../entity/user/user.entity';
 import {
   ApiBearerAuth,
   ApiNoContentResponse,
@@ -20,10 +18,12 @@ import {
   ApiUnauthorizedResponse,
   PickType,
 } from '@nestjs/swagger';
+import { User } from 'lib-intellecta-entity';
+
 import { UserUpdateDto } from './user.dto';
+import { UserService } from './user.service';
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import { userUpdateSchema } from '../../joi-schema/userSchema';
-import { Profile } from '../../entity/user/proflle.entity';
 import { UserAndProfileResponse } from './swagger-response';
 import { ReqProtectedType } from '../../types/protect.type';
 

@@ -1,12 +1,10 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Group, University, User } from 'lib-intellecta-entity';
 
 import { GroupController } from './group.controller';
 import { GroupService } from './group.service';
-import { Group } from '../../entity/group/group.entity';
-import { University } from '../../entity/university/university.entity';
 import { AuthMiddlewareService } from '../../services/auth-middleware.service';
-import { User } from '../../entity/user/user.entity';
 import { UniversityRepository } from '../../repository/university.repository';
 import { ProtectAuthMiddleware } from '../../middlewares/protect-auth.middleware';
 

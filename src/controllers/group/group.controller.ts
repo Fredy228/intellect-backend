@@ -11,7 +11,6 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { GroupService } from './group.service';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -22,18 +21,17 @@ import {
   OmitType,
   PickType,
 } from '@nestjs/swagger';
+import { Group, RoleEnum } from 'lib-intellecta-entity';
+
 import { RolesGuard } from '../../guard/role/roles.guard';
-import { RoleEnum } from '../../enums/user/role-enum';
 import { Roles } from '../../guard/role/roles.decorator';
-import { User } from '../../entity/user/user.entity';
 import { GroupDto } from './group.dto';
+import { GroupService } from './group.service';
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import {
   groupCreateSchema,
   groupUpdateSchema,
 } from '../../joi-schema/groupSchema';
-import { UserAndProfileResponse } from '../user/swagger-response';
-import { Group } from '../../entity/group/group.entity';
 import { ReqProtectedType } from '../../types/protect.type';
 
 @ApiTags('Group')

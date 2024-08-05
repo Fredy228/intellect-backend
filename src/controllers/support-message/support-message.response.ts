@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SupportMessage } from '../../entity/support-message.entity';
+import { SupportMessage } from 'lib-intellecta-entity';
 
 export class GetAllSupportMessagesResponse {
   @ApiProperty({

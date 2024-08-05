@@ -15,7 +15,6 @@ import {
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
-import { StudentService } from './student.service';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
@@ -27,11 +26,12 @@ import {
   ApiUnauthorizedResponse,
   PickType,
 } from '@nestjs/swagger';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { Profile, Student, User, RoleEnum } from 'lib-intellecta-entity';
+
 import { RolesGuard } from '../../guard/role/roles.guard';
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import { Roles } from '../../guard/role/roles.decorator';
-import { RoleEnum } from '../../enums/user/role-enum';
-import { User } from '../../entity/user/user.entity';
 import {
   AddManyStudentDto,
   AddStudentDto,
@@ -44,12 +44,10 @@ import {
 } from '../../joi-schema/studentSchema';
 import { parseQueryGetAll } from '../../services/generate-filter-list';
 import { CreateManyResponse, GetAllStudentResponse } from './student.response';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { FileValidatorPipe } from '../../pipe/validator-file.pipe';
 import { CustomException } from '../../services/custom-exception';
-import { Profile } from '../../entity/user/proflle.entity';
-import { Student } from '../../entity/user/student.entity';
 import { ReqProtectedType } from '../../types/protect.type';
+import { StudentService } from './student.service';
 
 @ApiTags('Student')
 @Controller('api/student')

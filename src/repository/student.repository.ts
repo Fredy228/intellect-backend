@@ -1,8 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Student } from '../entity/user/student.entity';
+import { Student, User } from 'lib-intellecta-entity';
+
 import { CustomException } from '../services/custom-exception';
-import { User } from '../entity/user/user.entity';
 
 @Injectable()
 export class StudentRepository extends Repository<Student> {

@@ -1,8 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../entity/user/user.entity';
+import { User, SupportMessage } from 'lib-intellecta-entity';
 import { Repository } from 'typeorm';
-import { SupportMessage } from '../../entity/support-message.entity';
+
 import {
   SupportMessageDto,
   UpdateSupportMessageDto,

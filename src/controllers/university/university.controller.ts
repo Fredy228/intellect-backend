@@ -21,9 +21,10 @@ import {
   ApiUnauthorizedResponse,
   PickType,
 } from '@nestjs/swagger';
+import { User, RoleEnum, University } from 'lib-intellecta-entity';
+
 import { RolesGuard } from '../../guard/role/roles.guard';
 import { Roles } from '../../guard/role/roles.decorator';
-import { RoleEnum } from '../../enums/user/role-enum';
 import { UniversityService } from './university.service';
 import {
   ModeratorCreateDto,
@@ -36,9 +37,7 @@ import {
   universityCreateSchema,
   universityUpdateSchema,
 } from '../../joi-schema/universitySchema';
-import { University } from '../../entity/university/university.entity';
 import { ReqProtectedType } from '../../types/protect.type';
-import { User } from '../../entity/user/user.entity';
 
 @ApiTags('University')
 @Controller('api/university')

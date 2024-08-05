@@ -4,11 +4,12 @@ import { EntityManager, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import { Details } from 'express-useragent';
+import { User, UserDevices } from 'lib-intellecta-entity';
 import * as dotenv from 'dotenv';
 import * as process from 'process';
+
 dotenv.config();
 
-import { User, UserDevices } from '../../entity/user/user.entity';
 import { LoginAuthDto, RegisterAuthDto } from './auth.dto';
 import { TokenType } from '../../types/token-type';
 import { CustomException } from '../../services/custom-exception';

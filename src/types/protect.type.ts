@@ -1,4 +1,4 @@
-import { User } from '../entity/user/user.entity';
+import { User } from 'lib-intellecta-entity';
 
 export type ReqProtectedType = {
   user: User;

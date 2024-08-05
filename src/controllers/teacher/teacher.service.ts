@@ -1,18 +1,16 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User, Teacher, RoleEnum, University } from 'lib-intellecta-entity';
+
 import { XlsxService } from '../../services/xlsx.service';
 import { UniversityRepository } from '../../repository/university.repository';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../entity/user/user.entity';
 import { AddTeacherDto } from './teacher.dto';
 import { CustomException } from '../../services/custom-exception';
 import { TeacherRepository } from '../../repository/teacher.repository';
-import { RoleEnum } from '../../enums/user/role-enum';
-import { University } from '../../entity/university/university.entity';
 import { teacherOneCreateSchema } from '../../joi-schema/teacherSchema';
 import { QueryGetAllType } from '../../types/query.type';
 import { generateFilterList } from '../../services/generate-filter-list';
-import { Teacher } from '../../entity/user/teacher.entity';
 
 @Injectable()
 export class TeacherService {

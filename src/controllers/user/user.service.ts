@@ -1,19 +1,22 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { parsePhoneNumber } from 'libphonenumber-js';
 import * as dotenv from 'dotenv';
 import * as process from 'process';
+import {
+  User,
+  UserDevices,
+  Profile,
+  RoleEnum,
+  Student,
+  Teacher,
+  Owner,
+  Moderator,
+} from 'lib-intellecta-entity';
 
-import { User, UserDevices } from '../../entity/user/user.entity';
-import { EntityManager, Repository } from 'typeorm';
 import { UserUpdateDto } from './user.dto';
-import { parsePhoneNumber } from 'libphonenumber-js';
 import { CustomException } from '../../services/custom-exception';
-import { Profile } from '../../entity/user/proflle.entity';
-import { RoleEnum } from '../../enums/user/role-enum';
-import { Student } from '../../entity/user/student.entity';
-import { Teacher } from '../../entity/user/teacher.entity';
-import { Owner } from '../../entity/user/owner.entity';
-import { Moderator } from '../../entity/user/admin.entity';
 
 dotenv.config();
 

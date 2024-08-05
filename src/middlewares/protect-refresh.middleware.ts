@@ -3,9 +3,9 @@ import { NextFunction, Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User, UserDevices } from 'lib-intellecta-entity';
 
 import { CustomException } from '../services/custom-exception';
-import { User, UserDevices } from '../entity/user/user.entity';
 
 @Injectable()
 export class ProtectRefreshMiddleware implements NestMiddleware {
