@@ -12,7 +12,7 @@ export class SupportMessageCronService {
     private supportMessageRepo: Repository<SupportMessage>,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_DAY_AT_NOON)
   async deleteOldMessage() {
     console.info('CHECKING OLD SUPPORT MESSAGES');
     const dateFilter = subMonths(new Date(), 6);

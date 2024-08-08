@@ -29,3 +29,8 @@ export class TokenDto {
   @ApiProperty()
   refreshToken: string;
 }
+
+export class RestorePassDto {
+  @ApiProperty()
+  password: string;
+}

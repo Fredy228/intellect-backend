@@ -238,6 +238,53 @@ export class AuthService {
     return;
   }
 
+  async restorePassword(key: string, password: string) {
+    const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.firstName',
+        'user.email',
+        'user.actions',
+        'user.security',
+      ])
+      .leftJoinAndSelect('user.devices', 'devices')
+      .where(`user.actions @> :action`, { action: { code: key } })
+      .getOne();
+
+    if (!user)
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `Incorrect or outdated link`,
+      );
+    if (user.security.is_block)
+      throw new CustomException(
+        423,
+        `User is blocked. Contact customer support.`,
+      );
+    if (
+      !user.actions.timeAt ||
+      new Date().getTime() - new Date(user.actions.timeAt).getTime() >
+        5 * 60 * 1000
+    )
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `The waiting time has expired. Your link is no longer valid.`,
+      );
+
+    return this.entityManager.transaction(async (transaction) => {
+      const hashPass = await hashPassword(password);
+
+      await transaction.update(User, user.id, {
+        password: hashPass,
+        actions: { timeAt: null, code: null, numberTries: 0 },
+      });
+      await transaction.delete(UserDevices, user.devices);
+
+      return;
+    });
+  }
+
   async deleteOldSession(devices: UserDevices[]) {
     return Promise.all(
       devices.map(async (device) => {

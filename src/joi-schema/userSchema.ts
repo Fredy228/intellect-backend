@@ -77,3 +77,16 @@ export const userUpdateSchema = Joi.object()
     }).allow(null),
   })
   .options({ stripUnknown: false });
+
+export const restorePassSchema = Joi.object()
+  .keys({
+    password: Joi.string()
+      .regex(/(?=.*\d)(?=.*[A-Z])[A-Za-z\d]{8,30}/)
+      .required()
+      .messages({
+        'string.empty': 'password|The password is empty.',
+        'string.pattern.base':
+          'password|Password may have a minimum of 8 characters, including at least one capital letter and one number',
+      }),
+  })
+  .options({ stripUnknown: false });

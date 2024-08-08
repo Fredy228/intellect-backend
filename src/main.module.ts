@@ -14,6 +14,7 @@ import { UniversityModule } from './controllers/university/university.module';
 import { StudentModule } from './controllers/student/student.module';
 import { TeacherModule } from './controllers/teacher/teacher.module';
 import { SupportMessageModule } from './controllers/support-message/support-message.module';
+import { MailModule } from './controllers/mail/mail.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { SupportMessageModule } from './controllers/support-message/support-mess
     StudentModule,
     TeacherModule,
     SupportMessageModule,
+    MailModule,
   ],
   providers: [],
 })

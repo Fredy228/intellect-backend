@@ -3,6 +3,8 @@ import {
   Controller,
   Get,
   HttpCode,
+  Param,
+  Patch,
   Post,
   Req,
   Res,
@@ -18,11 +20,19 @@ import { User, UserDevices } from 'lib-intellecta-entity';
 dotenv.config();
 
 import AuthGoogle from './google.guard';
-import { LoginAuthDto, RegisterAuthDto, TokenDto } from './auth.dto';
+import {
+  LoginAuthDto,
+  RegisterAuthDto,
+  RestorePassDto,
+  TokenDto,
+} from './auth.dto';
 import { AuthService } from './auth.service';
 
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
-import { userCreateSchema } from '../../joi-schema/userSchema';
+import {
+  restorePassSchema,
+  userCreateSchema,
+} from '../../joi-schema/userSchema';
 
 const CLIENT_URL = process.env.CLIENT_URL;
 const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
@@ -166,5 +176,20 @@ export class AuthController {
     @Req() req: Request & { user: User; currentDevice: UserDevices },
   ) {
     return this.authService.logout(req.currentDevice);
+  }
+
+  @Patch('/restore-pass/:key')
+  @ApiOperation({
+    summary: 'Restore user password',
+    description: 'Update user password',
+  })
+  @ApiResponse({ status: 204, description: 'Password updated' })
+  @UsePipes(new BodyValidationPipe(restorePassSchema))
+  @HttpCode(204)
+  async restorePassword(
+    @Param('key') key: string,
+    @Body() { password }: RestorePassDto,
+  ) {
+    return this.authService.restorePassword(key, password);
   }
 }
