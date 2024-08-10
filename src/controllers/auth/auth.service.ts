@@ -279,7 +279,9 @@ export class AuthService {
         password: hashPass,
         actions: { timeAt: null, code: null, numberTries: 0 },
       });
-      await transaction.delete(UserDevices, user.devices);
+
+      if (user.devices && user.devices.length)
+        await transaction.delete(UserDevices, user.devices);
 
       return;
     });
