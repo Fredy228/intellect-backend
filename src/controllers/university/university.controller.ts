@@ -95,6 +95,18 @@ export class UniversityController {
     return this.universityService.getProfileUni(Number(idUniversity));
   }
 
+  @ApiOperation({
+    summary: 'Create university manually',
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    status: 200,
+    description: 'Created university successfully',
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    description: 'Invalid token or not found',
+  })
   @Post('/')
   @HttpCode(201)
   @UsePipes(new BodyValidationPipe(universityCreateSchema))

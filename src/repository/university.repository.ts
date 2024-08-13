@@ -24,7 +24,9 @@ export class UniversityRepository extends Repository<University> {
         {
           id: idUniversity,
           owner: {
-            id: user.id,
+            user: {
+              id: user.id,
+            },
           },
         },
       ],
