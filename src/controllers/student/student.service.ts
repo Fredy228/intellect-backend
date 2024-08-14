@@ -60,11 +60,6 @@ export class StudentService {
       );
 
     const group = await this.groupRepository.findOneByUser(user, idGroup, true);
-    if (!group)
-      throw new CustomException(
-        HttpStatus.BAD_REQUEST,
-        `First you have to create a group`,
-      );
 
     const groupWithUser = await this.groupRepository.findOne({
       where: {
