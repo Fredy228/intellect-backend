@@ -61,7 +61,9 @@ export class GroupService {
         {
           university: {
             owner: {
-              id: user.id,
+              user: {
+                id: user.id,
+              },
             },
           },
         },
@@ -114,7 +116,9 @@ export class GroupService {
           id: idGroup,
           university: {
             owner: {
-              user,
+              user: {
+                id: user.id,
+              },
             },
           },
         },
@@ -122,7 +126,9 @@ export class GroupService {
           id: idGroup,
           university: {
             moderators: {
-              user,
+              user: {
+                id: user.id,
+              },
             },
           },
         },
