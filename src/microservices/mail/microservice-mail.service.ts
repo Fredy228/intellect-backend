@@ -1,22 +1,22 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
+import { MailForgotDto } from './mail.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'lib-intellecta-entity';
 import { Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
-import { MailerService } from '@nestjs-modules/mailer';
-
 import { CustomException } from '../../services/custom-exception';
-import * as process from 'process';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export class MailService {
+export class MicroserviceMailService {
   constructor(
+    @Inject('MAIL_SERVICE') private mailClientRMQ: ClientProxy,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private readonly mailerService: MailerService,
   ) {}
 
-  async sendRestorePassLink(email: string) {
+  async sendRestorePassLink({ email }: MailForgotDto) {
     const user = await this.usersRepository.findOne({
       where: { email },
       select: {
@@ -59,15 +59,9 @@ export class MailService {
     const key = uuidv4();
 
     try {
-      await this.mailerService.sendMail({
-        from: process.env.SMTP_USER,
-        to: user.email,
-        subject: 'Відновлення паролю Intellecta.',
-        template: 'forgot-pass',
-        context: {
-          url: `${process.env.CLIENT_URL}/auth/forgot/${key}`,
-        },
-      });
+      await lastValueFrom(
+        this.mailClientRMQ.emit('restore-pass', { email, key }),
+      );
 
       await this.usersRepository.update(user.id, {
         actions: {

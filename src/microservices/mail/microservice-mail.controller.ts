@@ -6,26 +6,25 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common';
-import { MailService } from './mail.service';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { SupportMessage } from 'lib-intellecta-entity';
+import { MicroserviceMailService } from './microservice-mail.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
-import { SendEmailSchema } from '../../joi-schema/mailSchema';
+import { SendEmailSchema } from '../../joi-schema/mail.schema';
 import { MailForgotDto } from './mail.dto';
 
 @Controller('api/mail')
 @ApiTags('Mail service')
 export class MailController {
-  constructor(private readonly mailService: MailService) {}
+  constructor(private readonly mailService: MicroserviceMailService) {}
 
   @ApiOperation({
     summary: 'Send message for restore pass',
   })
   @Post('/forgot-password')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   @UsePipes(new BodyValidationPipe(SendEmailSchema))
-  async sendForgotPass(@Body() { email }: MailForgotDto) {
-    return this.mailService.sendRestorePassLink(email);
+  async sendForgotPass(@Body() body: MailForgotDto) {
+    return this.mailService.sendRestorePassLink(body);
   }
 }
