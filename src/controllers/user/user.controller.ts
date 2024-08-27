@@ -23,7 +23,7 @@ import { User } from 'lib-intellecta-entity';
 import { UserUpdateDto } from './user.dto';
 import { UserService } from './user.service';
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
-import { userUpdateSchema } from '../../joi-schema/userSchema';
+import { userUpdateSchema } from '../../joi-schema/user.schema';
 import { UserAndProfileResponse } from './swagger-response';
 import { ReqProtectedType } from '../../types/protect.type';
 

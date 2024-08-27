@@ -6,7 +6,6 @@ import { TeacherService } from './teacher.service';
 import { TeacherController } from './teacher.controller';
 import { TeacherRepository } from '../../repository/teacher.repository';
 import { XlsxService } from '../../services/xlsx.service';
-import { AuthMiddlewareService } from '../../services/auth-middleware.service';
 import { ProtectAuthMiddleware } from '../../middlewares/protect-auth.middleware';
 import { UniversityRepository } from '../../repository/university.repository';
 
@@ -17,7 +16,6 @@ import { UniversityRepository } from '../../repository/university.repository';
     TeacherRepository,
     UniversityRepository,
     XlsxService,
-    AuthMiddlewareService,
   ],
   controllers: [TeacherController],
 })

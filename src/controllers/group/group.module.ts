@@ -4,13 +4,12 @@ import { Group, University, User } from 'lib-intellecta-entity';
 
 import { GroupController } from './group.controller';
 import { GroupService } from './group.service';
-import { AuthMiddlewareService } from '../../services/auth-middleware.service';
 import { UniversityRepository } from '../../repository/university.repository';
 import { ProtectAuthMiddleware } from '../../middlewares/protect-auth.middleware';
 
 @Module({
   controllers: [GroupController],
-  providers: [GroupService, AuthMiddlewareService, UniversityRepository],
+  providers: [GroupService, UniversityRepository],
   imports: [TypeOrmModule.forFeature([Group, University, User])],
 })
 export class GroupModule {

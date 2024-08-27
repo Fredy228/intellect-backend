@@ -5,15 +5,10 @@ import { User, SupportMessage } from 'lib-intellecta-entity';
 import { SupportMessageService } from './support-message.service';
 import { SupportMessageController } from './support-message.controller';
 import { ProtectAuthMiddleware } from '../../middlewares/protect-auth.middleware';
-import { AuthMiddlewareService } from '../../services/auth-middleware.service';
 import { SupportMessageCronService } from './support-message.cron.service';
 
 @Module({
-  providers: [
-    SupportMessageService,
-    AuthMiddlewareService,
-    SupportMessageCronService,
-  ],
+  providers: [SupportMessageService, SupportMessageCronService],
   controllers: [SupportMessageController],
   imports: [TypeOrmModule.forFeature([SupportMessage, User])],
 })

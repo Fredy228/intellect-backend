@@ -13,7 +13,6 @@ import {
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { ProtectAuthMiddleware } from '../../middlewares/protect-auth.middleware';
-import { AuthMiddlewareService } from '../../services/auth-middleware.service';
 
 @Module({
   imports: [
@@ -28,7 +27,7 @@ import { AuthMiddlewareService } from '../../services/auth-middleware.service';
     ]),
   ],
   controllers: [UserController],
-  providers: [UserService, AuthMiddlewareService],
+  providers: [UserService],
 })
 export class UserModule {
   configure(consumer: MiddlewareConsumer) {

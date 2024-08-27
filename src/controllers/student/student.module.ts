@@ -7,7 +7,6 @@ import { StudentController } from './student.controller';
 import { UniversityRepository } from '../../repository/university.repository';
 import { GroupRepository } from '../../repository/group.repository';
 import { ProtectAuthMiddleware } from '../../middlewares/protect-auth.middleware';
-import { AuthMiddlewareService } from '../../services/auth-middleware.service';
 import { XlsxService } from '../../services/xlsx.service';
 import { StudentRepository } from '../../repository/student.repository';
 
@@ -16,7 +15,6 @@ import { StudentRepository } from '../../repository/student.repository';
     StudentService,
     UniversityRepository,
     GroupRepository,
-    AuthMiddlewareService,
     XlsxService,
     StudentRepository,
   ],
