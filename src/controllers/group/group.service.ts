@@ -6,6 +6,8 @@ import { Group, User } from 'lib-intellecta-entity';
 import { GroupDto } from './group.dto';
 import { CustomException } from '../../services/custom-exception';
 import { UniversityRepository } from '../../repository/university.repository';
+import { QueryGetAllType } from '../../types/query.type';
+import { generateFilterList } from '../../services/generate-filter-list';
 
 @Injectable()
 export class GroupService {
@@ -40,17 +42,23 @@ export class GroupService {
     return newGroup;
   }
 
-  async getAll(user: User, idUniversity: number) {
+  async getAll(user: User, idUniversity: number, query: QueryGetAllType) {
     if (!idUniversity)
       throw new CustomException(
         HttpStatus.BAD_REQUEST,
         `Wrong id of University ID ${idUniversity}`,
       );
 
+    const options = generateFilterList(query, ['name']);
+
+    console.log('options', options);
+
     const [groups, count] = await this.groupRepository.findAndCount({
       where: [
         {
+          ...options.filterOption,
           university: {
+            id: idUniversity,
             moderators: {
               user: {
                 id: user.id,
@@ -59,7 +67,9 @@ export class GroupService {
           },
         },
         {
+          ...options.filterOption,
           university: {
+            id: idUniversity,
             owner: {
               user: {
                 id: user.id,
@@ -68,6 +78,8 @@ export class GroupService {
           },
         },
       ],
+      order: options.sortOption,
+      ...options.rangeOption,
       select: {
         id: true,
         name: true,

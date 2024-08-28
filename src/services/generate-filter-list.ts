@@ -1,5 +1,5 @@
 import { QueryGetAllType } from '../types/query.type';
-import { Like } from 'typeorm';
+import { ILike } from 'typeorm';
 import { HttpStatus } from '@nestjs/common';
 import { CustomException } from './custom-exception';
 
@@ -16,7 +16,7 @@ export const generateFilterList = (
   if (filter) {
     Object.keys(filter).forEach((key: string) => {
       if (searchField.includes(key)) {
-        filterOption[key] = Like('%' + filter[key] + '%');
+        filterOption[key] = ILike('%' + filter[key] + '%');
       } else {
         filterOption[key] = filter[key];
       }

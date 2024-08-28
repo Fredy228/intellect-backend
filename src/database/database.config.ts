@@ -41,8 +41,8 @@ const config: TypeOrmModuleOptions = {
     Subject,
     Icon,
   ],
-  synchronize: process.env.PRODUCTION !== 'true', // В режиме разработки можно устанавливать в true, но в продакшене лучше false
-  logging: process.env.PRODUCTION !== 'true',
+  synchronize: !Number(process.env.PRODUCTION), // В режиме разработки можно устанавливать в true, но в продакшене лучше false
+  logging: !Number(process.env.PRODUCTION),
 };
 
 export default config;

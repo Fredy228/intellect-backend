@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
   UsePipes,
@@ -16,6 +17,7 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
   OmitType,
@@ -33,6 +35,7 @@ import {
   groupUpdateSchema,
 } from '../../joi-schema/groupSchema';
 import { ReqProtectedType } from '../../types/protect.type';
+import { parseQueryGetAll } from '../../services/generate-filter-list';
 
 @ApiTags('Group')
 @Controller('api/group')
@@ -97,6 +100,21 @@ export class GroupController {
     description: 'Get all groups in university',
   })
   @ApiBearerAuth()
+  @ApiQuery({
+    name: 'range',
+    required: false,
+    description: 'Range. [1, 20]',
+  })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    description: 'Filter by fields. { [name_field: string]: value }',
+  })
+  @ApiQuery({
+    name: 'sort',
+    required: false,
+    description: 'Sort by fields. [field, "ASC"] (ASC | DESC)',
+  })
   @ApiOkResponse({
     status: 200,
     description: 'Got all groups in university',
@@ -112,8 +130,12 @@ export class GroupController {
   async getAllGroups(
     @Req() req: ReqProtectedType,
     @Param('idUniversity') idUniversity: string,
+    @Query('range') range: string,
+    @Query('filter') filter: string,
+    @Query('sort') sort: string,
   ) {
-    return this.groupService.getAll(req.user, Number(idUniversity));
+    const query = parseQueryGetAll({ range, filter, sort });
+    return this.groupService.getAll(req.user, Number(idUniversity), query);
   }
 
   @ApiOperation({
