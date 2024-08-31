@@ -5,10 +5,10 @@ import { User, Teacher, RoleEnum, University } from 'lib-intellecta-entity';
 
 import { XlsxService } from '../../services/xlsx.service';
 import { UniversityRepository } from '../../repository/university.repository';
-import { AddTeacherDto } from './teacher.dto';
+import { AddTeacherDto, UpdateTeacherDto } from './teacher.dto';
 import { CustomException } from '../../services/custom-exception';
 import { TeacherRepository } from '../../repository/teacher.repository';
-import { teacherOneCreateSchema } from '../../joi-schema/teacherSchema';
+import { teacherOneCreateSchema } from '../../joi-schema/teacher.schema';
 import { QueryGetAllType } from '../../types/query.type';
 import { generateFilterList } from '../../services/generate-filter-list';
 
@@ -198,6 +198,23 @@ export class TeacherService {
       data: teachers,
       total: count,
     };
+  }
+
+  async update(user: User, idTeacher: number, body: Partial<UpdateTeacherDto>) {
+    const teacher = await this.teacherRepository.findOneByIdAndUser(
+      user,
+      idTeacher,
+    );
+
+    if (!teacher)
+      throw new CustomException(
+        HttpStatus.NOT_FOUND,
+        `Wrong id of Teacher ID ${idTeacher}`,
+      );
+
+    await this.teacherRepository.update(teacher.id, body);
+
+    return { ...teacher, ...body };
   }
 
   async deleteById(user: User, idTeacher: number) {

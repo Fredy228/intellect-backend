@@ -30,7 +30,7 @@ import { Roles } from '../../guard/role/roles.decorator';
 import {
   supportMessageCreateSchema,
   supportMessageUpdateSchema,
-} from '../../joi-schema/support-messageSchema';
+} from '../../joi-schema/support-message.schema';
 import { ReqProtectedType } from '../../types/protect.type';
 import {
   SupportMessageDto,

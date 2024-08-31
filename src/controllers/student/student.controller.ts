@@ -41,7 +41,7 @@ import {
   studentChangeGroupSchema,
   studentManyCreateSchema,
   studentOneCreateSchema,
-} from '../../joi-schema/studentSchema';
+} from '../../joi-schema/student.schema';
 import { parseQueryGetAll } from '../../services/generate-filter-list';
 import { CreateManyResponse, GetAllStudentResponse } from './student.response';
 import { FileValidatorPipe } from '../../pipe/validator-file.pipe';

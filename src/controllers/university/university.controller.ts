@@ -36,7 +36,7 @@ import {
   AdminOneCreateSchema,
   universityCreateSchema,
   universityUpdateSchema,
-} from '../../joi-schema/universitySchema';
+} from '../../joi-schema/university.schema';
 import { ReqProtectedType } from '../../types/protect.type';
 
 @ApiTags('University')

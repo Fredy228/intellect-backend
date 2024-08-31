@@ -13,6 +13,7 @@ import { TeacherModule } from './controllers/teacher/teacher.module';
 import { SupportMessageModule } from './controllers/support-message/support-message.module';
 import { MicroserviceMailModule } from './microservices/mail/microservice-mail.module';
 import { MicroserviceAuthModule } from './microservices/auth/microservice-auth.module';
+import { SubjectModule } from './controllers/subject/subject.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MicroserviceAuthModule } from './microservices/auth/microservice-auth.m
     StudentModule,
     TeacherModule,
     SupportMessageModule,
+    SubjectModule,
   ],
   providers: [],
 })

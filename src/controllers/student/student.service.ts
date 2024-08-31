@@ -10,7 +10,7 @@ import { CustomException } from '../../services/custom-exception';
 import { QueryGetAllType } from '../../types/query.type';
 import { generateFilterList } from '../../services/generate-filter-list';
 import { XlsxService } from '../../services/xlsx.service';
-import { studentOneCreateSchema } from '../../joi-schema/studentSchema';
+import { studentOneCreateSchema } from '../../joi-schema/student.schema';
 import { StudentRepository } from '../../repository/student.repository';
 
 @Injectable()

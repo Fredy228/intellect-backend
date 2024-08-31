@@ -51,9 +51,7 @@ export class GroupService {
 
     const options = generateFilterList(query, ['name']);
 
-    console.log('options', options);
-
-    const [groups, count] = await this.groupRepository.findAndCount({
+    const [groups, total] = await this.groupRepository.findAndCount({
       where: [
         {
           ...options.filterOption,
@@ -89,9 +87,7 @@ export class GroupService {
       },
     });
 
-    if (!groups) return [];
-
-    return { data: groups, count };
+    return { data: groups, total };
   }
 
   async getById(idGroup: number): Promise<Group> {

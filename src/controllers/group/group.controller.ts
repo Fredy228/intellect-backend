@@ -33,7 +33,7 @@ import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import {
   groupCreateSchema,
   groupUpdateSchema,
-} from '../../joi-schema/groupSchema';
+} from '../../joi-schema/group.schema';
 import { ReqProtectedType } from '../../types/protect.type';
 import { parseQueryGetAll } from '../../services/generate-filter-list';
 
@@ -155,8 +155,8 @@ export class GroupController {
   @Get('/id/:idGroup')
   @HttpCode(200)
   @Roles()
-  async getByIdGroup(@Param('idGroup') idUniversity: string) {
-    return this.groupService.getById(Number(idUniversity));
+  async getByIdGroup(@Param('idGroup') idGroup: string) {
+    return this.groupService.getById(Number(idGroup));
   }
 
   @ApiOperation({

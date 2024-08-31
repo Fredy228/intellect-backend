@@ -11,6 +11,12 @@ export class UniversityRepository extends Repository<University> {
   }
 
   async findByUser(user: User, idUniversity: number): Promise<University> {
+    if (!idUniversity)
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `Wrong id of University ID ${idUniversity}`,
+      );
+
     const university = await this.findOne({
       where: [
         {

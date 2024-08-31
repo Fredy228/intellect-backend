@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -26,13 +27,16 @@ import {
   PickType,
 } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { User, Profile, RoleEnum } from 'lib-intellecta-entity';
+import { User, Profile, RoleEnum, Group, Teacher } from 'lib-intellecta-entity';
 
 import { RolesGuard } from '../../guard/role/roles.guard';
 import { BodyValidationPipe } from '../../pipe/validator-body.pipe';
 import { Roles } from '../../guard/role/roles.decorator';
-import { AddTeacherDto } from './teacher.dto';
-import { teacherOneCreateSchema } from '../../joi-schema/teacherSchema';
+import { AddTeacherDto, UpdateTeacherDto } from './teacher.dto';
+import {
+  teacherOneCreateSchema,
+  teacherUpdateSchema,
+} from '../../joi-schema/teacher.schema';
 import {
   CreateManyResponse,
   GetAllStudentResponse,
@@ -167,6 +171,32 @@ export class TeacherController {
     const query = parseQueryGetAll({ range, filter, sort });
 
     return this.teacherService.getAll(Number(idUniversity), query);
+  }
+
+  @ApiOperation({
+    summary: 'Update teacher',
+    description: 'Update teacher in university',
+  })
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    status: 200,
+    description: 'Updated teacher',
+    type: Teacher,
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    description: 'Invalid token or not found',
+  })
+  @Patch('/:idTeacher')
+  @HttpCode(200)
+  @UsePipes(new BodyValidationPipe(teacherUpdateSchema))
+  @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
+  async update(
+    @Req() { user }: ReqProtectedType,
+    @Body() body: Partial<UpdateTeacherDto>,
+    @Param('idTeacher') idTeacher: string,
+  ) {
+    return this.teacherService.update(user, Number(idTeacher), body);
   }
 
   @ApiOperation({
