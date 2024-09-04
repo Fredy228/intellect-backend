@@ -95,7 +95,7 @@ export class TeacherService {
       [];
 
     const curr_sheet = this.xlsxService.readExcel(file);
-    console.log('curr_sheet', curr_sheet);
+
     await Promise.all(
       curr_sheet.map(async (item, idx) => {
         if ('email' in item && 'job_title' in item) {

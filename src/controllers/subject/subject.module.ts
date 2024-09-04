@@ -36,7 +36,7 @@ export class SubjectModule {
         method: RequestMethod.DELETE,
       },
       {
-        path: '/api/student/:idSubject',
+        path: '/api/subject/:idSubject',
         method: RequestMethod.PATCH,
       },
     );
