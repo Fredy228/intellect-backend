@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 
-import databaseConfig from './database/database.config';
+import databaseConfig from './../data-source';
 import { ConferenceModule } from './conference/conference.module';
 import { WebSocketModule } from './socket/websocket.module';
 import { UserModule } from './controllers/user/user.module';
@@ -19,7 +19,7 @@ import { SubjectModule } from './controllers/subject/subject.module';
   imports: [
     MicroserviceMailModule,
     MicroserviceAuthModule,
-    TypeOrmModule.forRoot(databaseConfig),
+    TypeOrmModule.forRoot(databaseConfig.options),
     ScheduleModule.forRoot(),
     UserModule,
     WebSocketModule,
