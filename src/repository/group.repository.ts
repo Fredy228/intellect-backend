@@ -15,6 +15,12 @@ export class GroupRepository extends Repository<Group> {
     idGroup: number,
     isWithUni?: boolean,
   ): Promise<Group> {
+    if (!idGroup)
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `Wrong id of Group ID ${idGroup}`,
+      );
+
     const relations = isWithUni ? { university: true } : {};
 
     const group = await this.findOne({

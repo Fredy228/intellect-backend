@@ -1,7 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import { Student, User, RoleEnum, University } from 'lib-intellecta-entity';
+import {
+  Student,
+  User,
+  RoleEnum,
+  University,
+  Group,
+} from 'lib-intellecta-entity';
 
 import { UniversityRepository } from '../../repository/university.repository';
 import { AddStudentDto, UpdateGroupStudentDto } from './student.dto';
@@ -24,23 +30,7 @@ export class StudentService {
     private readonly xlsxService: XlsxService,
   ) {}
 
-  async createOne(
-    user: User,
-    idUniversity: number,
-    { email }: AddStudentDto,
-    idGroup: number,
-  ): Promise<User> {
-    if (!idGroup)
-      throw new CustomException(
-        HttpStatus.BAD_REQUEST,
-        `Wrong id of Group ID ${idGroup}`,
-      );
-    if (!idUniversity)
-      throw new CustomException(
-        HttpStatus.NOT_FOUND,
-        `Wrong id of University ID ${idUniversity}`,
-      );
-
+  async create(group: Group, { email }: AddStudentDto) {
     const userToStudent = await this.userRepository.findOne({
       where: { email },
       select: {
@@ -58,8 +48,6 @@ export class StudentService {
         HttpStatus.BAD_REQUEST,
         `User with email ${email} not found`,
       );
-
-    const group = await this.groupRepository.findOneByUser(user, idGroup, true);
 
     const groupWithUser = await this.groupRepository.findOne({
       where: {
@@ -99,6 +87,16 @@ export class StudentService {
 
       return userToStudent;
     });
+  }
+
+  async createOne(
+    user: User,
+    body: AddStudentDto,
+    idGroup: number,
+  ): Promise<User> {
+    const group = await this.groupRepository.findOneByUser(user, idGroup, true);
+
+    return this.create(group, body);
   }
 
   async getAll(idUniversity: number, query: QueryGetAllType, idGroup: number) {
@@ -168,18 +166,11 @@ export class StudentService {
     user: User,
     files: Array<Express.Multer.File>,
     groupsId: number[],
-    idUniversity: number,
   ) {
-    if (!idUniversity)
-      throw new CustomException(
-        HttpStatus.NOT_FOUND,
-        `Wrong id of University ID ${idUniversity}`,
-      );
-
     if (groupsId.length !== files.length)
       throw new CustomException(
         HttpStatus.BAD_REQUEST,
-        `Incorrect groups or files`,
+        `Incorrect list groups or files`,
       );
 
     const errorRes: {
@@ -191,62 +182,51 @@ export class StudentService {
 
     await Promise.all(
       files.map(async (file, index) => {
+        const group = await this.groupRepository.findOneByUser(
+          user,
+          groupsId[index],
+          true,
+        );
+
         const curr_sheet = this.xlsxService.readExcel(file);
-        console.log('curr_sheet', curr_sheet);
         await Promise.all(
           curr_sheet.map(async (item, idx) => {
-            if ('email' in item && item.email) {
-              const { error } = studentOneCreateSchema.validate({
-                email: item.email,
-              });
-              if (error) {
-                const prev_err = errorRes[index] || [];
-                errorRes[index] = [
-                  ...prev_err,
-                  {
-                    message: 'Incorrect email address',
-                    email: item.email,
-                    number: idx + 1,
-                  },
-                ];
-              } else {
-                try {
-                  const addedUser = await this.createOne(
-                    user,
-                    idUniversity,
-                    { email: item.email },
-                    groupsId[index],
-                  );
-                  const prev_succs = succsRes[index] || [];
-                  succsRes[index] = [
-                    ...prev_succs,
-                    {
-                      message: 'Successfully added',
-                      email: addedUser.email,
-                      number: idx + 1,
-                    },
-                  ];
-                } catch (e) {
-                  const prev_err = errorRes[index] || [];
-                  errorRes[index] = [
-                    ...prev_err,
-                    {
-                      message: `${e?.message}`,
-                      email: item.email,
-                      number: idx + 1,
-                    },
-                  ];
-                }
-              }
-            } else {
+            const { error } = studentOneCreateSchema.validate({
+              item,
+            });
+            if (error) {
               const prev_err = errorRes[index] || [];
               errorRes[index] = [
                 ...prev_err,
                 {
-                  message: "You didn't provide an email address",
+                  message: error.message,
+                  email: item.email,
                   number: idx + 1,
                 },
               ];
+            } else {
+              try {
+                const addedUser = await this.create(group, item);
+                const prev_succs = succsRes[index] || [];
+                succsRes[index] = [
+                  ...prev_succs,
+                  {
+                    message: 'Successfully added',
+                    email: addedUser.email,
+                    number: idx + 1,
+                  },
+                ];
+              } catch (e) {
+                const prev_err = errorRes[index] || [];
+                errorRes[index] = [
+                  ...prev_err,
+                  {
+                    message: `${e?.message}`,
+                    email: item.email,
+                    number: idx + 1,
+                  },
+                ];
+              }
             }
           }),
         );

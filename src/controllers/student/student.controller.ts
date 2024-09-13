@@ -80,22 +80,16 @@ export class StudentController {
     status: 409,
     description: 'User already exists in group',
   })
-  @Post('/one/:idUniversity')
+  @Post('/one/:idGroup')
   @HttpCode(HttpStatus.CREATED)
   @UsePipes(new BodyValidationPipe(studentOneCreateSchema))
   @Roles(RoleEnum.MODER_UNIVERSITY, RoleEnum.OWNER_UNIVERSITY)
   async createOne(
     @Req() req: ReqProtectedType,
     @Body() body: AddStudentDto,
-    @Param('idUniversity') idUniversity: string,
-    @Query('idGroup') idGroup: string,
+    @Param('idGroup') idGroup: string,
   ) {
-    return this.studentService.createOne(
-      req.user,
-      Number(idUniversity),
-      body,
-      Number(idGroup),
-    );
+    return this.studentService.createOne(req.user, body, Number(idGroup));
   }
 
   @ApiOperation({
@@ -143,12 +137,7 @@ export class StudentController {
     if (error) {
       throw new CustomException(HttpStatus.BAD_REQUEST, error.message);
     }
-    return this.studentService.createMany(
-      req.user,
-      files?.file,
-      value.groupId,
-      Number(idUniversity),
-    );
+    return this.studentService.createMany(req.user, files?.file, value.groupId);
   }
 
   @ApiOperation({

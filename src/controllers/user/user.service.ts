@@ -5,14 +5,14 @@ import { parsePhoneNumber } from 'libphonenumber-js';
 import * as dotenv from 'dotenv';
 import * as process from 'process';
 import {
-  User,
-  UserDevices,
+  Moderator,
+  Owner,
   Profile,
   RoleEnum,
   Student,
   Teacher,
-  Owner,
-  Moderator,
+  User,
+  UserDevices,
 } from 'lib-intellecta-entity';
 
 import { UserUpdateDto } from './user.dto';
@@ -41,40 +41,48 @@ export class UserService {
   ) {}
 
   async getUser(user: User): Promise<User> {
-    // if (Number(profileId)) {
-    //   const currProfile = profiles.find((i) => i.id === profileId);
-    //   if (!currProfile)
-    //     throw new CustomException(
-    //       HttpStatus.NOT_FOUND,
-    //       `Not found profile by id: ${profileId}`,
-    //     );
-    //
-    //   const option = {
-    //     where: {
-    //       id: currProfile.id,
-    //     },
-    //   };
-    //
-    //   switch (currProfile.role) {
-    //     case RoleEnum.STUDENT:
-    //       profile = this.studentRepository.findOne(option);
-    //       break;
-    //     case RoleEnum.TEACHER:
-    //       profile = this.teacherRepository.findOne(option);
-    //       break;
-    //     case RoleEnum.OWNER_UNIVERSITY:
-    //       profile = this.ownerRepository.findOne(option);
-    //       break;
-    //     case RoleEnum.MODER_UNIVERSITY:
-    //       profile = this.moderatorRepository.findOne(option);
-    //       break;
-    //     default:
-    //       throw new CustomException(
-    //         HttpStatus.BAD_REQUEST,
-    //         `Role: ${currProfile.role} is invalid`,
-    //       );
-    //   }
-    // }
+    const profiles = user.profiles;
+
+    user.profiles = await Promise.all(
+      profiles.map(async (item) => {
+        switch (item.role) {
+          case RoleEnum.OWNER_UNIVERSITY:
+            return await this.ownerRepository.findOne({
+              where: {
+                id: item.id,
+              },
+              relations: {
+                university: true,
+              },
+              select: {
+                university: {
+                  id: true,
+                  university_name: true,
+                  university_short_name: true,
+                },
+              },
+            });
+          case RoleEnum.MODER_UNIVERSITY:
+            return await this.moderatorRepository.findOne({
+              where: {
+                id: item.id,
+              },
+              relations: {
+                university: true,
+              },
+              select: {
+                university: {
+                  id: true,
+                  university_name: true,
+                  university_short_name: true,
+                },
+              },
+            });
+          default:
+            return item;
+        }
+      }),
+    );
 
     return user;
   }

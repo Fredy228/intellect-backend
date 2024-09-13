@@ -22,22 +22,7 @@ export class TeacherService {
     private readonly teacherRepository: TeacherRepository,
   ) {}
 
-  async createOne(
-    user: User,
-    idUniversity: number,
-    { email, job_title }: AddTeacherDto,
-  ) {
-    if (!idUniversity)
-      throw new CustomException(
-        HttpStatus.NOT_FOUND,
-        `Wrong id of University ID ${idUniversity}`,
-      );
-
-    const university = await this.universityRepository.findByUser(
-      user,
-      idUniversity,
-    );
-
+  async create(university: University, { email, job_title }: AddTeacherDto) {
     const userToTeacher = await this.userRepository.findOne({
       where: { email },
       select: {
@@ -54,6 +39,22 @@ export class TeacherService {
       throw new CustomException(
         HttpStatus.BAD_REQUEST,
         `User with email ${email} not found`,
+      );
+
+    const existTeacher = await this.teacherRepository.findOne({
+      where: {
+        user: {
+          id: userToTeacher.id,
+        },
+        university: {
+          id: university.id,
+        },
+      },
+    });
+    if (existTeacher)
+      throw new CustomException(
+        HttpStatus.BAD_REQUEST,
+        `Such Teacher already exists`,
       );
 
     return this.entityManager.transaction(async (transaction) => {
@@ -78,16 +79,24 @@ export class TeacherService {
     });
   }
 
+  async createOne(user: User, idUniversity: number, body: AddTeacherDto) {
+    const university = await this.universityRepository.findByUser(
+      user,
+      idUniversity,
+    );
+
+    return this.create(university, body);
+  }
+
   async createMany(
     user: User,
     file: Express.Multer.File,
     idUniversity: number,
   ) {
-    if (!idUniversity)
-      throw new CustomException(
-        HttpStatus.NOT_FOUND,
-        `Wrong id of University ID ${idUniversity}`,
-      );
+    const university = await this.universityRepository.findByUser(
+      user,
+      idUniversity,
+    );
 
     const errorRes: Array<{ email?: string; message: string; number: number }> =
       [];
@@ -98,41 +107,31 @@ export class TeacherService {
 
     await Promise.all(
       curr_sheet.map(async (item, idx) => {
-        if ('email' in item && 'job_title' in item) {
-          const { error } = teacherOneCreateSchema.validate({
+        const { error } = teacherOneCreateSchema.validate(item);
+        if (error) {
+          errorRes.push({
+            message: error.message,
             email: item.email,
-            job_title: item.job_title,
+            number: idx + 1,
           });
-          if (error) {
+        } else {
+          try {
+            const addedUser = await this.create(university, {
+              email: item.email,
+              job_title: item.job_title,
+            });
+            succsRes.push({
+              message: 'Successfully added',
+              email: addedUser.email,
+              number: idx + 1,
+            });
+          } catch (e) {
             errorRes.push({
-              message: error.message,
+              message: `${e?.message}`,
               email: item.email,
               number: idx + 1,
             });
-          } else {
-            try {
-              const addedUser = await this.createOne(user, idUniversity, {
-                email: item.email,
-                job_title: item.job_title,
-              });
-              succsRes.push({
-                message: 'Successfully added',
-                email: addedUser.email,
-                number: idx + 1,
-              });
-            } catch (e) {
-              errorRes.push({
-                message: `${e?.message}`,
-                email: item.email,
-                number: idx + 1,
-              });
-            }
           }
-        } else {
-          errorRes.push({
-            message: "You didn't provide an email address or job title",
-            number: idx + 1,
-          });
         }
       }),
     );

@@ -8,11 +8,12 @@ import { CustomException } from '../../services/custom-exception';
 import { UniversityRepository } from '../../repository/university.repository';
 import { QueryGetAllType } from '../../types/query.type';
 import { generateFilterList } from '../../services/generate-filter-list';
+import { GroupRepository } from '../../repository/group.repository';
 
 @Injectable()
 export class GroupService {
   constructor(
-    @InjectRepository(Group) private groupRepository: Repository<Group>,
+    private readonly groupRepository: GroupRepository,
     private readonly universityRepository: UniversityRepository,
   ) {}
 
@@ -21,12 +22,6 @@ export class GroupService {
     body: GroupDto,
     idUniversity: number,
   ): Promise<Group> {
-    if (!idUniversity)
-      throw new CustomException(
-        HttpStatus.BAD_REQUEST,
-        `Wrong id of University ID ${idUniversity}`,
-      );
-
     const foundUniversity = await this.universityRepository.findByUser(
       user,
       idUniversity,
@@ -112,44 +107,7 @@ export class GroupService {
   }
 
   async delete(user: User, idGroup: number): Promise<Group> {
-    if (!idGroup)
-      throw new CustomException(
-        HttpStatus.BAD_REQUEST,
-        `Wrong id of Group ID ${idGroup}`,
-      );
-
-    const group = await this.groupRepository.findOne({
-      where: [
-        {
-          id: idGroup,
-          university: {
-            owner: {
-              user: {
-                id: user.id,
-              },
-            },
-          },
-        },
-        {
-          id: idGroup,
-          university: {
-            moderators: {
-              user: {
-                id: user.id,
-              },
-            },
-          },
-        },
-      ],
-      select: {
-        id: true,
-        name: true,
-        level: true,
-      },
-    });
-
-    if (!group)
-      throw new CustomException(HttpStatus.BAD_REQUEST, `Not found our Group`);
+    const group = await this.groupRepository.findOneByUser(user, idGroup);
 
     await this.groupRepository.delete(group.id);
 
@@ -161,7 +119,7 @@ export class GroupService {
     idGroup: number,
     body: Partial<GroupDto> = {},
   ): Promise<Group> {
-    const group = await this.getById(idGroup);
+    const group = await this.groupRepository.findOneByUser(user, idGroup);
 
     Object.keys(body).forEach((key: string) => {
       if (body[key]) group[key] = body[key];

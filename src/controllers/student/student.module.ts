@@ -25,7 +25,7 @@ export class StudentModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(ProtectAuthMiddleware).forRoutes(
       {
-        path: '/api/student/one/:idUniversity',
+        path: '/api/student/one/:idGroup',
         method: RequestMethod.POST,
       },
       {
