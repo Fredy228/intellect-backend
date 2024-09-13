@@ -6,11 +6,12 @@ import { GroupController } from './group.controller';
 import { GroupService } from './group.service';
 import { UniversityRepository } from '../../repository/university.repository';
 import { ProtectAuthMiddleware } from '../../middlewares/protect-auth.middleware';
+import { GroupRepository } from '../../repository/group.repository';
 
 @Module({
   controllers: [GroupController],
-  providers: [GroupService, UniversityRepository],
-  imports: [TypeOrmModule.forFeature([Group, University, User])],
+  providers: [GroupService, UniversityRepository, GroupRepository],
+  imports: [TypeOrmModule.forFeature([User])],
 })
 export class GroupModule {
   configure(consumer: MiddlewareConsumer) {
