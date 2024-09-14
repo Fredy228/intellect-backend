@@ -46,7 +46,7 @@ export class TeacherService {
         user: {
           id: userToTeacher.id,
         },
-        university: {
+        university_teacher: {
           id: university.id,
         },
       },
@@ -63,7 +63,7 @@ export class TeacherService {
         job_title,
         role: RoleEnum.TEACHER,
         user: userToTeacher,
-        university,
+        university_teacher: university,
       });
 
       await transaction.save(newTeacher);
@@ -166,7 +166,7 @@ export class TeacherService {
 
     const [teachers, count] = await this.teacherRepository.findAndCount({
       where: {
-        university: {
+        university_teacher: {
           id: university.id,
         },
         user: {
@@ -229,7 +229,7 @@ export class TeacherService {
         .createQueryBuilder()
         .update(University)
         .set({ count_teachers: () => 'count_teachers - 1' })
-        .where('id = :id', { id: teacher.university.id })
+        .where('id = :id', { id: teacher.university_teacher.id })
         .execute();
 
       return teacher;

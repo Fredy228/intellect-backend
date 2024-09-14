@@ -52,10 +52,10 @@ export class UserService {
                 id: item.id,
               },
               relations: {
-                university: true,
+                university_owner: true,
               },
               select: {
-                university: {
+                university_owner: {
                   id: true,
                   university_name: true,
                   university_short_name: true,
@@ -68,10 +68,26 @@ export class UserService {
                 id: item.id,
               },
               relations: {
-                university: true,
+                university_moderator: true,
               },
               select: {
-                university: {
+                university_moderator: {
+                  id: true,
+                  university_name: true,
+                  university_short_name: true,
+                },
+              },
+            });
+          case RoleEnum.TEACHER:
+            return await this.teacherRepository.findOne({
+              where: {
+                id: item.id,
+              },
+              relations: {
+                university_teacher: true,
+              },
+              select: {
+                university_teacher: {
                   id: true,
                   university_name: true,
                   university_short_name: true,

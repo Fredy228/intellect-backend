@@ -21,7 +21,7 @@ export class TeacherRepository extends Repository<Teacher> {
       where: [
         {
           id: idTeacher,
-          university: {
+          university_teacher: {
             owner: {
               user: {
                 id: user.id,
@@ -31,7 +31,7 @@ export class TeacherRepository extends Repository<Teacher> {
         },
         {
           id: idTeacher,
-          university: {
+          university_teacher: {
             moderators: {
               user: {
                 id: user.id,
@@ -41,10 +41,10 @@ export class TeacherRepository extends Repository<Teacher> {
         },
       ],
       relations: {
-        university: true,
+        university_teacher: true,
       },
       select: {
-        university: {
+        university_teacher: {
           id: true,
           university_short_name: true,
           count_teachers: true,

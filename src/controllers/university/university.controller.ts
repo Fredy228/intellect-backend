@@ -17,6 +17,7 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
   PickType,
@@ -99,6 +100,11 @@ export class UniversityController {
     summary: 'Create university manually',
   })
   @ApiBearerAuth()
+  @ApiQuery({
+    name: 'id',
+    description: 'User ID who will be owner',
+    required: true,
+  })
   @ApiOkResponse({
     status: 200,
     description: 'Created university successfully',

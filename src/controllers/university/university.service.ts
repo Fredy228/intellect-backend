@@ -90,14 +90,14 @@ export class UniversityService {
         user,
       });
 
-      await transaction.save(newOwner);
+      await transaction.save(Owner, newOwner);
 
       const newUniversity = transaction.create(University, {
         ...body,
         owner: newOwner,
       });
 
-      await transaction.save(newUniversity);
+      await transaction.save(University, newUniversity);
 
       return newUniversity;
     });
@@ -258,7 +258,7 @@ export class UniversityService {
         user: userToModerator,
         role: RoleEnum.MODER_UNIVERSITY,
         title: `Адмін ${university.university_short_name}`,
-        university,
+        university_moderator: university,
       });
 
       await transaction.save(newModerator);
