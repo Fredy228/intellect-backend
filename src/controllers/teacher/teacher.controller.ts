@@ -37,13 +37,13 @@ import {
   teacherOneCreateSchema,
   teacherUpdateSchema,
 } from '../../joi-schema/teacher.schema';
-import {
-  CreateManyResponse,
-  GetAllStudentResponse,
-} from '../student/student.response';
 import { FileValidatorPipe } from '../../pipe/validator-file.pipe';
 import { parseQueryGetAll } from '../../services/generate-filter-list';
 import { ReqProtectedType } from '../../types/protect.type';
+import {
+  CreateManyResponseTeacher,
+  GetAllTeacherResponse,
+} from './teacher.response';
 
 @ApiTags('Teacher')
 @Controller('api/teacher')
@@ -92,7 +92,7 @@ export class TeacherController {
   @ApiCreatedResponse({
     status: 201,
     description: 'Created teachers',
-    type: CreateManyResponse,
+    type: CreateManyResponseTeacher,
   })
   @ApiUnauthorizedResponse({
     status: 401,
@@ -152,7 +152,7 @@ export class TeacherController {
   @ApiOkResponse({
     status: 200,
     description: 'Get all teacher',
-    type: GetAllStudentResponse,
+    type: GetAllTeacherResponse,
   })
   @ApiUnauthorizedResponse({
     status: 401,

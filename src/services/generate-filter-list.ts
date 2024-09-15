@@ -29,6 +29,7 @@ export const generateFilterList = (
   }
 
   if (sort && sort.length === 2) sortOption[sort[0]] = sort[1];
+  else sortOption['id'] = 'ASC';
 
   return { filterOption, rangeOption, sortOption };
 };

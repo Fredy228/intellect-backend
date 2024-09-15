@@ -17,13 +17,25 @@ export class GetAllStudentResponse {
 }
 
 class ObjectCreateStudentResponse {
-  @ApiProperty({})
+  @ApiProperty({
+    type: String,
+    required: true,
+    example: 'Message of response',
+  })
   message: string;
 
-  @ApiProperty({})
+  @ApiProperty({
+    type: String,
+    required: false,
+    example: 'user@gmail.com',
+  })
   email: string;
 
-  @ApiProperty({})
+  @ApiProperty({
+    type: Number,
+    required: true,
+    example: 1,
+  })
   number: number;
 }
 
@@ -34,7 +46,7 @@ class DataCreateStudentResponse {
   group_id: [ObjectCreateStudentResponse];
 }
 
-export class CreateManyResponse {
+export class CreateManyResponseStudent {
   @ApiProperty()
   data: DataCreateStudentResponse;
 

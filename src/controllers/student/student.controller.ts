@@ -43,7 +43,10 @@ import {
   studentOneCreateSchema,
 } from '../../joi-schema/student.schema';
 import { parseQueryGetAll } from '../../services/generate-filter-list';
-import { CreateManyResponse, GetAllStudentResponse } from './student.response';
+import {
+  CreateManyResponseStudent,
+  GetAllStudentResponse,
+} from './student.response';
 import { FileValidatorPipe } from '../../pipe/validator-file.pipe';
 import { CustomException } from '../../services/custom-exception';
 import { ReqProtectedType } from '../../types/protect.type';
@@ -100,7 +103,7 @@ export class StudentController {
   @ApiCreatedResponse({
     status: 201,
     description: 'Created students',
-    type: CreateManyResponse,
+    type: CreateManyResponseStudent,
   })
   @ApiUnauthorizedResponse({
     status: 401,

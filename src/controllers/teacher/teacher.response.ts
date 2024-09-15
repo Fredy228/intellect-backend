@@ -1,43 +1,52 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { Student } from 'lib-intellecta-entity';
+import { Teacher } from 'lib-intellecta-entity';
 
-export class GetAllStudentResponse {
+export class GetAllTeacherResponse {
   @ApiProperty({
-    description: 'Array all student',
-    type: [PickType(Student, ['id', 'title', 'user'])],
+    description: 'Array all teacher',
+    type: [PickType(Teacher, ['id', 'title', 'user'])],
   })
-  data: Array<Pick<Student, 'id' | 'title' | 'user'>>;
+  data: Array<Pick<Teacher, 'id' | 'title' | 'user'>>;
 
   @ApiProperty({
     type: Number,
     nullable: false,
-    description: 'Count of students',
+    description: 'Count of teachers',
   })
   total: number;
 }
 
-class ObjectCreateStudentResponse {
-  @ApiProperty({})
+class ObjectCreateTeacherResponse {
+  @ApiProperty({
+    type: String,
+    required: true,
+    example: 'Message of response',
+  })
   message: string;
 
-  @ApiProperty({})
+  @ApiProperty({
+    type: String,
+    required: false,
+    example: 'user@gmail.com',
+  })
   email: string;
 
-  @ApiProperty({})
+  @ApiProperty({
+    type: Number,
+    required: true,
+    example: 1,
+  })
   number: number;
 }
 
-class DataCreateStudentResponse {
+export class CreateManyResponseTeacher {
   @ApiProperty({
-    type: [ObjectCreateStudentResponse],
+    type: [ObjectCreateTeacherResponse],
   })
-  group_id: [ObjectCreateStudentResponse];
-}
+  data: [ObjectCreateTeacherResponse];
 
-export class CreateManyResponseStudent {
-  @ApiProperty()
-  data: DataCreateStudentResponse;
-
-  @ApiProperty()
-  error: DataCreateStudentResponse;
+  @ApiProperty({
+    type: [ObjectCreateTeacherResponse],
+  })
+  error: [ObjectCreateTeacherResponse];
 }
